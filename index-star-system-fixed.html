@@ -1,0 +1,2579 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌍 世界國旗大冒險</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #1B2E4B;
+  --sky:    #4FC3F7;
+  --sun:    #FFD23F;
+  --grass:  #43C880;
+  --coral:  #FF6B6B;
+  --lavender: #B39DDB;
+  --cream:  #FFFDF5;
+  --soft:   #F4F7FF;
+  --border: #E8EDF6;
+  --text:   #2C3E60;
+  --muted:  #94A3C0;
+  --shadow: 0 4px 24px rgba(27,46,75,0.10);
+  --shadow-lg: 0 8px 40px rgba(27,46,75,0.16);
+  --r: 20px;
+  --r-sm: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+  font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+  background: #EEF3FB;
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ─── BACKGROUND DECO ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 10%, #D6EDFF88 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 90% 80%, #FFF3C888 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, #E8F5E988 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ─── TOP NAV — plan A single row ─── */
+.topbar-outer {
+  padding: 7px 12px 6px;
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(238,243,251,0.94);
+  backdrop-filter: blur(8px);
+}
+.topbar {
+  max-width: 960px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.topbar-left { flex-shrink: 0; }
+.topbar-right {
+  display: flex; align-items: center; gap: 5px; flex-shrink: 0;
+}
+.topnav {
+  display: flex; gap: 2px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  border-radius: 10px; padding: 3px;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 2px 12px rgba(27,46,75,0.09);
+}
+.topnav-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 800;
+  padding: 6px 14px; border-radius: 7px; border: none;
+  cursor: pointer; transition: all 0.2s;
+  color: var(--muted); background: transparent;
+  display: flex; align-items: center; gap: 4px;
+}
+.topnav-btn.active { background: white; color: var(--navy); box-shadow: 0 1px 6px rgba(27,46,75,0.10); }
+.topnav-btn:hover:not(.active) { color: var(--navy); }
+
+/* combined player+star chip */
+.player-star-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 50px; padding: 4px 10px 4px 8px;
+  font-size: 12px; font-weight: 800; color: var(--navy);
+  box-shadow: 0 2px 8px rgba(27,46,75,0.08);
+  cursor: pointer; transition: all 0.18s;
+  max-width: 150px;
+}
+.player-star-chip:hover { border-color: var(--sky); background: #F0FAFF; }
+.player-star-chip .pname {
+  max-width: 72px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+}
+.player-star-chip .sep { width: 1px; height: 12px; background: var(--border); flex-shrink: 0; }
+.player-star-chip .spart { color: #B8860B; white-space: nowrap; flex-shrink: 0; }
+
+/* icon buttons */
+.icon-nav-btn {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: white; border: 1.5px solid var(--border);
+  font-size: 15px; cursor: pointer; transition: all 0.18s;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(27,46,75,0.07);
+  flex-shrink: 0;
+}
+.icon-nav-btn:hover { background: var(--soft); border-color: var(--sky); transform: scale(1.06); }
+.icon-nav-btn.gold { background: #FFFBEA; border-color: #FFD23F; }
+.icon-nav-btn.gold:hover { background: #FFF3C8; }
+
+.stars-chip {
+  display: flex; align-items: center; gap: 4px;
+  background: #FFFBEA; border: 1.5px solid #FFD23F;
+  border-radius: 50px; padding: 4px 12px;
+  font-size: 12px; font-weight: 800; color: #B8860B;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(27,46,75,0.08);
+}
+
+/* ─── HERO MARQUEE BANNER ─── */
+.hero-banner {
+  position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #1B2E4B 0%, #2A4A7F 50%, #1B3A6B 100%);
+  border-radius: 0; width: 100%; padding: 16px 0 12px;
+}
+.hero-banner::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(-45deg,
+    rgba(255,255,255,0.025) 0, rgba(255,255,255,0.025) 1px,
+    transparent 1px, transparent 12px);
+  pointer-events: none;
+}
+.hero-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(20px, 4.5vw, 30px);
+  color: white; text-align: center;
+  letter-spacing: 1px; position: relative; z-index: 1;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  margin-bottom: 10px;
+}
+.hero-title span { color: var(--sun); }
+.marquee-wrap {
+  width: 100%; overflow: hidden;
+  position: relative; z-index: 1;
+}
+.marquee-track {
+  display: flex; gap: 14px; align-items: center;
+  animation: marqueeScroll 90s linear infinite;
+  width: max-content;
+}
+.marquee-flag { font-size: 26px; line-height: 1; flex-shrink: 0; }
+@keyframes marqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ─── ARENA — sticky title row ─── */
+.arena-sticky {
+  position: sticky; top: 0;
+  z-index: 20;
+  background: #EEF3FB;
+  padding: 8px 0 6px;
+  margin-bottom: 0;
+}
+.arena-header {
+  display: flex; align-items: center; gap: 14px;
+  background: white; border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 12px rgba(27,46,75,0.09);
+  border: 1.5px solid var(--border);
+}
+.arena-back {
+  width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--border);
+  background: var(--soft); font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s; color: var(--navy); flex-shrink: 0;
+}
+.arena-back:hover { background: #F0F3F9; transform: scale(1.08); }
+.arena-title { font-family: 'Fredoka One', cursive; font-size: 18px; color: var(--navy); flex: 1; }
+.arena-score { font-size: 14px; font-weight: 800; color: var(--muted); white-space: nowrap; }
+
+.progress-row { margin: 8px 0 14px; }
+.prog-bar { height: 6px; background: var(--border); border-radius: 50px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 50px; transition: width 0.35s ease; }
+.prog-s1 { background: linear-gradient(90deg, var(--sky), #2EB8F0); }
+.prog-s2 { background: linear-gradient(90deg, var(--grass), #2DB86C); }
+.prog-s3 { background: linear-gradient(90deg, var(--coral), #F74040); }
+
+/* Timer — corner badge inside qcard */
+.timer-corner {
+  position: absolute; top: 14px; right: 14px;
+  width: 52px; height: 52px;
+}
+.timer-corner svg { transform: rotate(-90deg); width: 52px; height: 52px; }
+.timer-corner circle { fill: none; stroke-width: 4; }
+.timer-corner .timer-text {
+  position: absolute; inset: 0; display: flex;
+  align-items: center; justify-content: center;
+  font-family: 'Fredoka One', cursive; font-size: 17px; color: var(--navy);
+}
+.timer-corner .timer-text.urgent { color: var(--coral); }
+.page { display: none; position: relative; z-index: 1; }
+.page.active { display: block; }
+.page-inner { max-width: 960px; margin: 0 auto; padding: 24px 20px 80px; }
+
+/* ─── SECTION HEADING ─── */
+.section-label {
+  font-size: 12px; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 14px;
+}
+
+/* ─── CONTINENT PILLS ─── */
+.cont-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.cont-pill {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px; font-weight: 800;
+  padding: 7px 18px; border-radius: 50px;
+  border: 2px solid var(--border);
+  background: white; color: var(--muted);
+  cursor: pointer; transition: all 0.18s;
+}
+.cont-pill:hover { border-color: var(--sky); color: var(--navy); }
+.cont-pill.active { background: var(--navy); border-color: var(--navy); color: white; }
+
+/* ─── LEARN GRID ─── */
+.learn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 14px;
+}
+.country-card {
+  background: white; border-radius: var(--r);
+  border: 2px solid var(--border);
+  padding: 18px 12px 14px;
+  text-align: center; cursor: pointer;
+  transition: all 0.22s; position: relative;
+  box-shadow: var(--shadow);
+}
+.country-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--sky);
+  box-shadow: var(--shadow-lg);
+}
+.country-card.learned { border-color: #A8E6C0; background: #F0FDF6; }
+.c-flag { font-size: 48px; line-height: 1; display: block; margin-bottom: 8px; }
+.c-name { font-size: 14px; font-weight: 800; color: var(--navy); line-height: 1.3; }
+.c-name-en { font-size: 13px; font-weight: 700; color: #6B80A0; margin-top: 3px; }
+.c-capital { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 600; }
+/* speak button on card */
+.c-speak {
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-top: 8px; width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid var(--border); background: var(--soft);
+  font-size: 13px; cursor: pointer; transition: all 0.18s;
+  color: var(--muted);
+}
+.c-speak:hover { background: #EAF7FF; border-color: var(--sky); color: var(--sky); transform: scale(1.1); }
+
+/* Learned badge — tiny ribbon */
+.learned-ribbon {
+  position: absolute; top: 8px; right: 8px;
+  background: var(--grass); color: white;
+  font-size: 10px; font-weight: 900;
+  padding: 2px 7px; border-radius: 50px;
+  opacity: 0; transition: opacity 0.2s;
+  letter-spacing: 0.5px;
+}
+.country-card.learned .learned-ribbon { opacity: 1; }
+
+/* ─── POPUP ─── */
+.overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(20,30,50,0.5);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s; padding: 16px;
+}
+.overlay.show { opacity: 1; pointer-events: all; }
+
+.popup {
+  background: white; border-radius: 28px;
+  max-width: 520px; width: 100%;
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.22);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+}
+.overlay.show .popup { transform: translateY(0) scale(1); }
+
+.popup-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 32px; height: 32px; border-radius: 50%;
+  border: none; background: var(--soft); color: var(--muted);
+  font-size: 16px; cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s; line-height: 1;
+}
+.popup-close:hover { background: #FFE5E5; color: var(--coral); }
+
+.popup-head {
+  padding: 28px 28px 18px; text-align: center;
+  border-bottom: 2px solid var(--border);
+}
+.popup-flag { font-size: 72px; line-height: 1; }
+.popup-name-zh { font-family: 'Fredoka One', cursive; font-size: 26px; color: var(--navy); margin-top: 8px; }
+.popup-name-en-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
+.popup-name-en { font-size: 16px; color: #6B80A0; font-weight: 700; }
+.speak-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1.5px solid var(--border); background: var(--soft);
+  font-size: 14px; cursor: pointer; transition: all 0.18s;
+  color: var(--muted); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.speak-btn:hover { background: #EAF7FF; border-color: var(--sky); color: var(--sky); transform: scale(1.12); }
+.speak-btn:active { transform: scale(0.95); }
+
+/* Popup tabs */
+.popup-tabs {
+  display: flex; border-bottom: 2px solid var(--border);
+}
+.ptab {
+  flex: 1; padding: 13px 6px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 800;
+  border: none; background: none; cursor: pointer;
+  color: var(--muted); transition: all 0.18s;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+}
+.ptab.active { color: var(--navy); border-bottom-color: var(--navy); }
+.ptab:hover:not(.active) { color: var(--navy); }
+
+.popup-body { padding: 20px 24px 10px; }
+.ppanel { display: none; animation: fadeUp 0.2s ease; }
+.ppanel.active { display: block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+.info-row {
+  display: flex; gap: 12px; padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.info-row:last-child { border: none; }
+.info-ico { font-size: 20px; width: 26px; flex-shrink: 0; margin-top: 1px; }
+.info-lbl { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+.info-val { font-size: 14px; font-weight: 700; color: var(--navy); margin-top: 2px; line-height: 1.4; }
+.info-val-en { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+.culture-text { font-size: 14px; font-weight: 600; color: #445; line-height: 1.8; }
+
+.fact-card {
+  border-radius: 14px; padding: 13px 16px; margin-bottom: 10px;
+  font-size: 14px; font-weight: 700; color: #334; line-height: 1.6;
+  border-left: 4px solid;
+}
+.fact-card:nth-child(1) { background: #FFFBEA; border-color: var(--sun); }
+.fact-card:nth-child(2) { background: #F0F8FF; border-color: var(--sky); }
+.fact-card:nth-child(3) { background: #F0FDF4; border-color: var(--grass); }
+.fact-num { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }
+
+.wiki-more-wrap {
+  margin-top: 18px;
+  padding: 14px 4px 4px;
+  border-top: 1.5px dashed var(--border);
+  text-align: center;
+}
+.wiki-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 50px;
+  border: 1.5px solid var(--border);
+  background: var(--soft);
+  color: var(--navy);
+  font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: all 0.18s;
+}
+.wiki-more-btn:hover {
+  background: #EAF7FF;
+  border-color: var(--sky);
+  transform: translateY(-1px);
+}
+
+
+/* Learned button — small pill at bottom of popup */
+.learned-btn-wrap { padding: 12px 24px 20px; }
+.learned-btn {
+  width: 100%; padding: 11px; border-radius: 50px; border: 2px dashed #A8E6C0;
+  background: transparent; color: var(--grass);
+  font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.learned-btn:hover { background: #F0FDF6; border-style: solid; }
+.learned-btn.done {
+  background: #F0FDF6; border-style: solid;
+  color: #5BBF8A; cursor: default;
+}
+
+/* ─── QUIZ PAGE ─── */
+.quiz-hero {
+  text-align: center; padding: 0 0 36px;
+}
+.quiz-hero-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(28px, 5vw, 44px);
+  color: var(--navy); margin-bottom: 8px;
+}
+.quiz-hero-sub { font-size: 15px; color: var(--muted); font-weight: 700; }
+
+/* Stage cards */
+.stage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+@media (max-width: 600px) { .stage-grid { grid-template-columns: 1fr; } }
+.stage-card {
+  background: white; border-radius: var(--r);
+  border: 2px solid var(--border);
+  padding: 24px 18px 20px; text-align: center;
+  box-shadow: var(--shadow); position: relative; overflow: hidden;
+  transition: all 0.22s;
+}
+.stage-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+}
+.stage-card:nth-child(1)::before { background: linear-gradient(90deg, var(--sky), #74D7F7); }
+.stage-card:nth-child(2)::before { background: linear-gradient(90deg, var(--grass), #6DD9A0); }
+.stage-card:nth-child(3)::before { background: linear-gradient(90deg, var(--coral), #FF9A9A); }
+.stage-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
+
+.stage-num { font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.stage-icon { font-size: 40px; margin-bottom: 10px; }
+.stage-name { font-family: 'Fredoka One', cursive; font-size: 18px; color: var(--navy); margin-bottom: 6px; }
+.stage-desc { font-size: 12px; color: var(--muted); font-weight: 600; line-height: 1.5; margin-bottom: 16px; }
+.stage-meta { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.meta-tag {
+  font-size: 11px; font-weight: 800; padding: 3px 10px;
+  border-radius: 50px; background: var(--soft); color: var(--muted); border: 1px solid var(--border);
+}
+
+/* diff stars removed */
+
+.stage-btn {
+  width: 100%; padding: 11px; border-radius: 50px; border: none;
+  font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
+  cursor: pointer; transition: all 0.2s; color: white;
+}
+.stage-card:nth-child(1) .stage-btn { background: linear-gradient(135deg, var(--sky), #2EB8F0); }
+.stage-card:nth-child(2) .stage-btn { background: linear-gradient(135deg, var(--grass), #2DB86C); }
+.stage-card:nth-child(3) .stage-btn { background: linear-gradient(135deg, var(--coral), #F74040); }
+.stage-btn:hover { transform: scale(1.03); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+
+/* Stage 4 — BOSS card */
+.stage-card-boss { grid-column: 1 / -1; border-color: #333; }
+.stage-card-boss::before { background: linear-gradient(90deg, #1a1a1a, #555); }
+.stage-card-boss:hover { border-color: #111; }
+.stage-btn-boss { background: linear-gradient(135deg, #2a2a2a, #111); }
+.stage-btn-boss:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.45); }
+.meta-tag-boss { background: #111; color: #FFD23F; border-color: #111; }
+
+/* ─── QUIZ ARENA ─── */
+.arena { display: none; }
+.arena.active { display: block; }
+
+.arena-header {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+}
+.arena-back {
+  width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--border);
+  background: white; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s; color: var(--navy);
+}
+.arena-back:hover { background: var(--soft); transform: scale(1.08); }
+.arena-title { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--navy); flex: 1; }
+.arena-score { font-size: 15px; font-weight: 800; color: var(--muted); }
+
+.progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+.prog-bar { flex: 1; height: 10px; background: var(--border); border-radius: 50px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 50px; transition: width 0.35s ease; }
+.prog-s1 { background: linear-gradient(90deg, var(--sky), #2EB8F0); }
+.prog-s2 { background: linear-gradient(90deg, var(--grass), #2DB86C); }
+.prog-s3 { background: linear-gradient(90deg, var(--coral), #F74040); }
+.prog-lbl { font-size: 13px; font-weight: 800; color: var(--muted); white-space: nowrap; }
+
+/* timer is now inside qcard corner */
+
+/* Q card */
+.qcard {
+  background: white; border-radius: var(--r);
+  box-shadow: var(--shadow); padding: 20px 20px 22px;
+  animation: slideUp 0.3s ease;
+  border: 2px solid var(--border);
+  position: relative;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.qcard-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 50px;
+  font-size: 11px; font-weight: 900; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 14px;
+}
+.badge-s1 { background: #E3F6FD; color: #1B90C0; }
+.badge-s2 { background: #E8FAF0; color: #1A8A50; }
+.badge-s3 { background: #FFF0F0; color: #C0391B; }
+
+.qflag { font-size: 80px; text-align: center; margin: 8px 0 20px; line-height: 1; }
+.qtext { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 20px; line-height: 1.4; }
+
+/* Stage 1 choices — text only, no flag */
+.choices-s1 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choice {
+  padding: 18px 10px; border-radius: 14px;
+  border: 2px solid var(--border); background: var(--soft);
+  font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; color: var(--navy);
+  cursor: pointer; transition: all 0.18s; text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  min-height: 72px;
+}
+.choice-en { font-size: 12px; font-weight: 600; color: var(--muted); }
+.choice:hover:not(:disabled) { border-color: var(--sky); background: #EAF7FF; transform: translateY(-2px); }
+.choice.correct { border-color: var(--grass); background: #EDFAF4; color: var(--grass); }
+.choice.correct .choice-en { color: var(--grass); opacity: 0.7; }
+.choice.wrong   { border-color: var(--coral); background: #FFF0F0; color: var(--coral); animation: shake 0.35s; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+/* inline next btn inside qcard */
+.next-btn-inline {
+  display: none; width: 100%; margin-bottom: 12px;
+  padding: 12px; border-radius: 50px; border: none;
+  background: var(--navy); color: var(--sun);
+  font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800;
+  cursor: pointer; transition: all 0.2s;
+}
+.next-btn-inline.show { display: block; animation: popIn 0.25s ease; }
+.next-btn-inline:hover { background: #263B60; }
+
+/* Stage 2 — matching flag vs flag: both cols show flags, right col clickable answers */
+.match-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.match-col-head { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; text-align: center; }
+.match-col { display: flex; flex-direction: column; gap: 8px; }
+.mitem {
+  min-height: 64px; height: auto;
+  padding: 10px 8px; border-radius: 14px; border: 2px solid var(--border);
+  background: var(--soft); font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 700; color: var(--navy);
+  cursor: pointer; transition: all 0.18s; text-align: center;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1.3; word-break: break-word;
+}
+.mitem-flag { font-size: 34px; line-height: 1; }
+.mitem-name { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.mitem-name-zh { font-size: 14px; font-weight: 800; }
+.mitem-name-en { font-size: 11px; color: var(--muted); font-weight: 600; }
+.mitem:hover:not(:disabled) { border-color: var(--lavender); background: #F4F0FF; }
+.mitem.sel   { border-color: var(--lavender); background: #EEE8FF; }
+.mitem.ok    { border-color: var(--grass); background: #EDFAF4; color: var(--grass); pointer-events: none; }
+.mitem.ok .mitem-name-en { color: var(--grass); opacity: 0.7; }
+.mitem.fail  { border-color: var(--coral); background: #FFF0F0; animation: shake 0.35s; }
+
+/* Stage 3 — fill */
+.fill-wrap { display: flex; flex-direction: column; gap: 12px; }
+/* lang toggle */
+.fill-lang-toggle { display: flex; gap: 6px; justify-content: center; margin-bottom: 4px; }
+.lang-btn {
+  padding: 6px 20px; border-radius: 50px; border: 2px solid var(--border);
+  background: var(--soft); color: var(--muted);
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
+  cursor: pointer; transition: all 0.18s;
+}
+.lang-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
+/* EN letter slots */
+.letter-slots {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  justify-content: center; margin: 4px 0 8px;
+}
+.lslot {
+  width: 28px; height: 34px;
+  border-bottom: 3px solid var(--navy);
+  display: flex; align-items: flex-end; justify-content: center;
+  font-family: 'Fredoka One', cursive; font-size: 18px;
+  color: var(--navy); padding-bottom: 2px;
+  transition: color 0.2s;
+}
+.lslot.space { width: 14px; border-bottom: none; }
+.lslot.revealed { color: var(--coral); }
+.lslot.filled { color: var(--navy); }
+/* hint btn */
+.hint-row { display: flex; justify-content: center; gap: 8px; }
+.hint-btn {
+  padding: 7px 18px; border-radius: 50px;
+  border: 2px solid #FFD23F; background: #FFFBEA;
+  color: #B8860B; font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 5px;
+}
+.hint-btn:hover:not(:disabled) { background: #FFF3C8; transform: scale(1.03); }
+.hint-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.fill-input {
+  width: 100%; padding: 14px 18px; border-radius: 14px;
+  border: 2px solid var(--border); background: var(--soft);
+  font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+  font-size: 18px; font-weight: 700; color: var(--navy);
+  outline: none; transition: all 0.18s; text-align: center;
+}
+.fill-input:focus { border-color: var(--coral); background: #FFF8F8; }
+.fill-input.correct { border-color: var(--grass); background: #EDFAF4; color: var(--grass); }
+.fill-input.wrong   { border-color: var(--coral); background: #FFF0F0; animation: shake 0.35s; }
+.fill-hint { font-size: 13px; color: var(--muted); font-weight: 600; text-align: center; }
+.fill-submit {
+  padding: 13px; border-radius: 50px; border: none;
+  background: linear-gradient(135deg, var(--coral), #F74040);
+  color: white; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800;
+  cursor: pointer; transition: all 0.2s;
+}
+.fill-submit:hover { transform: scale(1.02); box-shadow: 0 4px 16px rgba(255,80,80,0.35); }
+.fill-delete {
+  padding: 10px 20px; border-radius: 50px;
+  border: 2px solid var(--border); background: var(--soft);
+  color: var(--muted); font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 5px;
+}
+.fill-delete:hover:not(:disabled) { background: #FFF0F0; border-color: var(--coral); color: var(--coral); }
+.fill-delete:disabled { opacity: 0.4; cursor: not-allowed; }
+.fill-action-row { display: flex; gap: 8px; align-items: center; }
+
+/* Feedback toast */
+.feedback {
+  margin-top: 14px; padding: 12px 16px; border-radius: 12px;
+  font-size: 14px; font-weight: 800; text-align: center;
+  display: none; animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.feedback.show { display: block; }
+.feedback.ok  { background: #EDFAF4; color: #1A8A50; }
+.feedback.bad { background: #FFF0F0; color: #C0391B; }
+@keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
+
+.next-btn {
+  display: none; margin: 16px auto 0;
+  padding: 12px 40px; border-radius: 50px; border: none;
+  background: var(--navy); color: var(--sun);
+  font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 800;
+  cursor: pointer; transition: all 0.2s;
+}
+.next-btn.show { display: block; animation: popIn 0.25s ease; }
+.next-btn:hover { background: #263B60; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(27,46,75,0.3); }
+
+/* ─── RESULT ─── */
+.result-card {
+  background: white; border-radius: var(--r);
+  box-shadow: var(--shadow); padding: 44px 32px;
+  text-align: center; display: none;
+  animation: slideUp 0.4s ease;
+}
+.result-card.show { display: block; }
+.result-emoji { font-size: 72px; }
+.result-title { font-family: 'Fredoka One', cursive; font-size: 30px; color: var(--navy); margin: 12px 0 6px; }
+.result-frac { font-size: 42px; font-weight: 900; color: var(--navy); margin: 10px 0 4px; }
+.result-pct { font-size: 18px; color: var(--muted); font-weight: 700; margin-bottom: 16px; }
+.result-bar-wrap { height: 16px; background: var(--border); border-radius: 50px; overflow: hidden; margin: 0 auto 24px; max-width: 300px; }
+.result-bar { height: 100%; background: linear-gradient(90deg, var(--grass), var(--sky)); border-radius: 50px; transition: width 1.2s cubic-bezier(0.23,1,0.32,1); }
+.result-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.rbtn {
+  padding: 12px 28px; border-radius: 50px; border: none;
+  font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800;
+  cursor: pointer; transition: all 0.2s; color: white;
+}
+.rbtn-retry { background: linear-gradient(135deg, var(--coral), #F74040); }
+.rbtn-home  { background: var(--navy); }
+.rbtn:hover { transform: scale(1.04); }
+
+/* ─── NICKNAME MODAL ─── */
+.nick-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(20,30,50,0.7);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.nick-modal {
+  background: white; border-radius: 28px;
+  max-width: 380px; width: 100%;
+  padding: 36px 28px 28px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  text-align: center;
+  animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.nick-emoji { font-size: 56px; margin-bottom: 8px; }
+.nick-title { font-family: 'Fredoka One', cursive; font-size: 26px; color: var(--navy); margin-bottom: 6px; }
+.nick-sub { font-size: 14px; color: var(--muted); font-weight: 600; margin-bottom: 24px; line-height: 1.5; }
+.nick-input {
+  width: 100%; padding: 14px 18px; border-radius: 14px;
+  border: 2px solid var(--border); background: var(--soft);
+  font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+  font-size: 18px; font-weight: 700; color: var(--navy);
+  outline: none; transition: all 0.18s; text-align: center;
+  margin-bottom: 10px;
+}
+.nick-input:focus { border-color: var(--sky); background: #F0FAFF; }
+.nick-pin-label {
+  font-size: 12px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 6px; margin-top: 4px; text-align: left;
+}
+.nick-pin-row {
+  display: flex; gap: 8px; justify-content: center; margin-bottom: 14px;
+}
+.nick-pin-digit {
+  width: 56px; height: 56px; border-radius: 14px;
+  border: 2px solid var(--border); background: var(--soft);
+  font-family: 'Fredoka One', cursive; font-size: 24px; color: var(--navy);
+  text-align: center; outline: none; transition: all 0.18s;
+  -webkit-appearance: none;
+}
+.nick-pin-digit:focus { border-color: var(--sky); background: #F0FAFF; box-shadow: 0 0 0 3px rgba(79,195,247,0.2); }
+.nick-btn {
+  width: 100%; padding: 13px; border-radius: 50px; border: none;
+  background: linear-gradient(135deg, var(--navy), #2A4A7F);
+  color: white; font-family: 'Nunito', sans-serif;
+  font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+  margin-bottom: 6px;
+}
+.nick-btn:hover { transform: scale(1.02); }
+.nick-warn {
+  font-size: 13px; color: var(--coral); font-weight: 700;
+  margin-top: 6px; min-height: 20px;
+}
+/* ─── CUSTOM CONFIRM MODAL ─── */
+.cconfirm-overlay {
+  position: fixed; inset: 0; z-index: 600;
+  background: rgba(20,30,50,0.55);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.cconfirm-overlay.show { opacity: 1; pointer-events: all; }
+.cconfirm-box {
+  background: white; border-radius: 24px;
+  max-width: 320px; width: 100%;
+  padding: 28px 24px 20px; text-align: center;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.2);
+  transform: scale(0.95);
+  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+.cconfirm-overlay.show .cconfirm-box { transform: scale(1); }
+.cconfirm-icon { font-size: 40px; margin-bottom: 8px; }
+.cconfirm-title { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--navy); margin-bottom: 8px; }
+.cconfirm-msg { font-size: 14px; color: var(--muted); font-weight: 600; line-height: 1.6; margin-bottom: 20px; }
+.cconfirm-pin-wrap { margin-bottom: 16px; }
+.cconfirm-pin-row {
+  display: flex; gap: 8px; justify-content: center;
+}
+.cconfirm-pin-digit {
+  width: 52px; height: 52px; border-radius: 12px;
+  border: 2px solid var(--border); background: var(--soft);
+  font-family: 'Fredoka One', cursive; font-size: 22px; color: var(--navy);
+  text-align: center; outline: none; transition: all 0.18s;
+  -webkit-appearance: none;
+}
+.cconfirm-pin-digit:focus { border-color: var(--sky); background: #F0FAFF; box-shadow: 0 0 0 3px rgba(79,195,247,0.2); }
+.cconfirm-warn { font-size: 12px; color: var(--coral); font-weight: 700; margin-top: 8px; min-height: 18px; }
+.cconfirm-btns { display: flex; gap: 8px; }
+.cconfirm-btn {
+  flex: 1; padding: 11px; border-radius: 50px; border: none;
+  font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
+  cursor: pointer; transition: all 0.18s;
+}
+.cconfirm-btn-cancel { background: var(--soft); color: var(--muted); border: 2px solid var(--border); }
+.cconfirm-btn-cancel:hover { background: #F0F3F9; }
+.cconfirm-btn-ok { background: var(--navy); color: white; }
+.cconfirm-btn-ok:hover { background: #263B60; }
+/* ─── LEADERBOARD OVERLAY ─── */
+.lb-overlay {
+  position: fixed; inset: 0; background: rgba(20,30,50,0.5);
+  backdrop-filter: blur(4px); z-index: 200;
+  display: flex; align-items: flex-start; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.22s;
+  padding: 56px 12px 0;
+  overflow-y: auto;
+}
+.lb-overlay.show { opacity: 1; pointer-events: all; }
+.lb-panel {
+  background: white; border-radius: 20px;
+  width: 100%; max-width: 420px; max-height: 85vh;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+  overflow: hidden; display: flex; flex-direction: column;
+  transform: translateY(-10px) scale(0.96);
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  margin-bottom: 20px;
+}
+.lb-overlay.show .lb-panel { transform: translateY(0) scale(1); }
+.lb-head {
+  padding: 16px 18px 12px;
+  border-bottom: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.lb-title { font-family: 'Fredoka One', cursive; font-size: 17px; color: var(--navy); }
+.lb-close {
+  width: 28px; height: 28px; border-radius: 50%; border: none;
+  background: var(--soft); color: var(--muted); cursor: pointer;
+  font-size: 14px; display: flex; align-items: center; justify-content: center;
+}
+.lb-close:hover { background: #FFE5E5; color: var(--coral); }
+.lb-tabs {
+  display: flex; border-bottom: 1.5px solid var(--border); flex-shrink: 0;
+}
+.lb-tab {
+  flex: 1; padding: 10px 4px; font-size: 12px; font-weight: 800;
+  border: none; background: none; cursor: pointer;
+  color: var(--muted); transition: all 0.18s;
+  border-bottom: 3px solid transparent; margin-bottom: -1.5px;
+}
+.lb-tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+.lb-body { overflow-y: auto; padding: 10px 14px 16px; flex: 1; }
+.lb-section { margin-bottom: 20px; }
+.lb-section-title {
+  font-size: 11px; font-weight: 900; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--muted); margin-bottom: 8px;
+}
+.lb-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 12px;
+  background: var(--soft); margin-bottom: 5px;
+  transition: background 0.15s;
+}
+.lb-row.me { background: #FFFBEA; border: 1.5px solid #FFD23F; }
+.lb-rank { font-family: 'Fredoka One', cursive; font-size: 16px; color: var(--muted); width: 24px; text-align: center; flex-shrink: 0; }
+.lb-rank.gold { color: #F5A623; }
+.lb-rank.silver { color: #9B9B9B; }
+.lb-rank.bronze { color: #C8722A; }
+.lb-name { flex: 1; font-size: 14px; font-weight: 800; color: var(--navy); }
+.lb-score { font-size: 13px; font-weight: 800; color: var(--muted); white-space: nowrap; }
+.lb-empty { text-align: center; padding: 24px; color: var(--muted); font-size: 14px; font-weight: 700; }
+.lb-loading { text-align: center; padding: 24px; color: var(--muted); font-size: 14px; }
+/* online indicator — kept for compatibility */
+
+.confetti-piece {
+  position: fixed; width: 9px; height: 9px; border-radius: 2px;
+  pointer-events: none; z-index: 999;
+  animation: cfall 1.6s ease-in forwards;
+}
+@keyframes cfall { 0%{transform:translateY(-10px) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(800deg);opacity:0} }
+
+/* Streak badge */
+.streak-pop {
+  position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+  background: var(--coral); color: white;
+  font-family: 'Fredoka One', cursive; font-size: 18px;
+  padding: 10px 24px; border-radius: 50px;
+  z-index: 300; pointer-events: none;
+  animation: streakAnim 1.5s ease forwards;
+}
+@keyframes streakAnim { 0%{opacity:0;transform:translateX(-50%) translateY(10px)} 20%{opacity:1;transform:translateX(-50%) translateY(0)} 70%{opacity:1} 100%{opacity:0;transform:translateX(-50%) translateY(-20px)} }
+/* ── History panel ── */
+.hist-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 50px; padding: 5px 12px;
+  font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+  color: var(--navy); cursor: pointer; transition: all 0.18s;
+  box-shadow: 0 2px 8px rgba(27,46,75,0.08);
+  white-space: nowrap;
+}
+.hist-btn:hover { border-color: var(--navy); background: var(--soft); }
+
+.hist-overlay {
+  position: fixed; inset: 0; background: rgba(20,30,50,0.5);
+  backdrop-filter: blur(4px); z-index: 200;
+  display: flex; align-items: flex-start; justify-content: flex-end;
+  opacity: 0; pointer-events: none; transition: opacity 0.22s;
+  padding: 60px 12px 0;
+}
+.hist-overlay.show { opacity: 1; pointer-events: all; }
+.hist-panel {
+  background: white; border-radius: 20px;
+  width: 300px; max-height: 70vh;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+  overflow: hidden; display: flex; flex-direction: column;
+  transform: translateY(-10px) scale(0.96);
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.hist-overlay.show .hist-panel { transform: translateY(0) scale(1); }
+.hist-head {
+  padding: 16px 18px 12px;
+  border-bottom: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.hist-title { font-family: 'Fredoka One', cursive; font-size: 17px; color: var(--navy); }
+.hist-close {
+  width: 28px; height: 28px; border-radius: 50%; border: none;
+  background: var(--soft); color: var(--muted); cursor: pointer;
+  font-size: 14px; display: flex; align-items: center; justify-content: center;
+}
+.hist-close:hover { background: #FFE5E5; color: var(--coral); }
+.hist-body { overflow-y: auto; padding: 10px 14px 14px; flex: 1; }
+.hist-empty { text-align: center; padding: 32px; color: var(--muted); font-size: 14px; font-weight: 700; }
+.hist-day { margin-bottom: 14px; }
+.hist-day-label {
+  font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted); margin-bottom: 6px;
+}
+.hist-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 12px;
+  background: var(--soft); margin-bottom: 5px;
+}
+.hist-item-stage { font-size: 16px; }
+.hist-item-info { flex: 1; }
+.hist-item-name { font-size: 13px; font-weight: 800; color: var(--navy); }
+.hist-item-score { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+.hist-item-stars { font-size: 13px; letter-spacing: -1px; }
+
+.nick-modal { position: relative; }
+
+.nick-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+  line-height: 1;
+}
+
+.nick-close:hover {
+  background: #FFE5E5;
+  color: var(--coral);
+  transform: scale(1.06);
+}
+
+.nick-sub {
+  line-height: 1.65;
+  white-space: normal;
+}
+
+</style>
+</head>
+<body>
+
+<!-- HERO MARQUEE BANNER -->
+<div class="hero-banner" id="heroBanner">
+  <div class="hero-title">🌍 世界<span>國旗</span>大冒險</div>
+  <div class="marquee-wrap">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </div>
+</div>
+
+<!-- TOP NAV -->
+<div class="topbar-outer">
+<nav class="topbar">
+  <div class="topbar-left">
+    <div class="topnav">
+      <button class="topnav-btn active" onclick="showPage('learn',this)">📚 學習</button>
+      <button class="topnav-btn" onclick="showPage('quiz',this)">🎯 測驗</button>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="player-star-chip" onclick="changeNickname()" title="點擊更換玩家">
+      <span>👤</span>
+      <span class="pname" id="playerName">載入中…</span>
+      <div class="sep"></div>
+      <span class="spart">⭐ <span id="starCount">0</span></span>
+    </div>
+    <button class="icon-nav-btn" onclick="openHist()" title="歷程">📋</button>
+    <button class="icon-nav-btn gold" onclick="openLeaderboard()" title="排行榜">🏆</button>
+  </div>
+</nav>
+</div>
+
+<!-- HISTORY OVERLAY -->
+<div class="hist-overlay" id="histOverlay" onclick="closeHistOverlay(event)">
+  <div class="hist-panel">
+    <div class="hist-head">
+      <div class="hist-title">📋 挑戰歷程</div>
+      <button class="hist-close" onclick="closeHist()">✕</button>
+    </div>
+    <div class="hist-body" id="histBody"></div>
+  </div>
+</div>
+
+<!-- NICKNAME MODAL -->
+<div class="nick-overlay" id="nickOverlay">
+  <div class="nick-modal">
+    <button class="nick-close" onclick="closeNickModal()" aria-label="關閉">✕</button>
+    <div class="nick-emoji" id="nickEmoji">🌍</div>
+    <div class="nick-title" id="nickTitle">你是誰？</div>
+    <div class="nick-sub" id="nickSub">輸入你的名字，讓大家知道是你挑戰了！</div>
+
+    <!-- Step 1: name -->
+    <div id="nickStep1">
+      <input class="nick-input" id="nickInput" placeholder="輸入暱稱（2~12字）" maxlength="12"
+        oninput="this.value=this.value.replace(/[<>\"']/g,'')"
+        onkeydown="if(event.key==='Enter')nickNextStep()">
+      <button class="nick-btn" onclick="nickNextStep()">下一步 →</button>
+    </div>
+
+    <!-- Step 2: set PIN (new player) -->
+    <div id="nickStep2" style="display:none">
+      <div class="nick-pin-label">設定 4 位數字密碼</div>
+      <div class="nick-pin-row">
+        <input class="nick-pin-digit" id="np0" type="password" inputmode="numeric" maxlength="1" oninput="pinMove('np',0,4)" onkeydown="pinBack('np',0,event)">
+        <input class="nick-pin-digit" id="np1" type="password" inputmode="numeric" maxlength="1" oninput="pinMove('np',1,4)" onkeydown="pinBack('np',1,event)">
+        <input class="nick-pin-digit" id="np2" type="password" inputmode="numeric" maxlength="1" oninput="pinMove('np',2,4)" onkeydown="pinBack('np',2,event)">
+        <input class="nick-pin-digit" id="np3" type="password" inputmode="numeric" maxlength="1" oninput="pinMove('np',3,4)" onkeydown="pinBack('np',3,event)">
+      </div>
+      <button class="nick-btn" onclick="confirmNickname()">開始冒險 🚀</button>
+    </div>
+
+    <!-- Step 3: verify PIN (existing player login) -->
+    <div id="nickStep3" style="display:none">
+      <div class="nick-pin-label">輸入你的密碼</div>
+      <div class="nick-pin-row">
+        <input class="nick-pin-digit" id="vp0" type="password" inputmode="numeric" maxlength="1" oninput="pinMove('vp',0,4)" onkeydown="pinBack('vp',0,event)">
+        <input class="nick-pin-digit" id="vp1" type="password" inputmode="numeric" maxlength="1" oninput="pinMove('vp',1,4)" onkeydown="pinBack('vp',1,event)">
+        <input class="nick-pin-digit" id="vp2" type="password" inputmode="numeric" maxlength="1" oninput="pinMove('vp',2,4)" onkeydown="pinBack('vp',2,event)">
+        <input class="nick-pin-digit" id="vp3" type="password" inputmode="numeric" maxlength="1" oninput="pinMove('vp',3,4)" onkeydown="pinBack('vp',3,event)">
+      </div>
+      <button class="nick-btn" onclick="confirmNickname()">確認登入 →</button>
+      <button class="nick-btn" style="background:var(--soft);color:var(--muted);border:2px solid var(--border);margin-top:6px" onclick="nickBackToStep1()">← 換個名字</button>
+    </div>
+
+    <div class="nick-warn" id="nickWarn"></div>
+  </div>
+</div>
+
+<!-- CUSTOM CONFIRM MODAL -->
+<div class="cconfirm-overlay" id="cconfirmOverlay">
+  <div class="cconfirm-box">
+    <div class="cconfirm-icon" id="cconfirmIcon">🔐</div>
+    <div class="cconfirm-title" id="cconfirmTitle">國旗大冒險</div>
+    <div class="cconfirm-msg" id="cconfirmMsg"></div>
+    <div class="cconfirm-btns">
+      <button class="cconfirm-btn cconfirm-btn-cancel" id="cconfirmCancel">取消</button>
+      <button class="cconfirm-btn cconfirm-btn-ok" id="cconfirmOk">確定</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEADERBOARD OVERLAY -->
+<div class="lb-overlay" id="lbOverlay" onclick="closeLbOverlay(event)">
+  <div class="lb-panel">
+    <div class="lb-head">
+      <div class="lb-title">🏆 排行榜</div>
+      <button class="lb-close" onclick="closeLeaderboard()">✕</button>
+    </div>
+    <div class="lb-tabs">
+      <button class="lb-tab active" onclick="lbTab('total',this)">⭐ 總星數</button>
+      <button class="lb-tab" onclick="lbTab('s1',this)">🚩 看旗選答</button>
+      <button class="lb-tab" onclick="lbTab('s2',this)">🎯 配對</button>
+      <button class="lb-tab" onclick="lbTab('s3',this)">✏️ 填空</button>
+      <button class="lb-tab" onclick="lbTab('s4',this)">👹 魔王</button>
+    </div>
+    <div class="lb-body" id="lbBody">
+      <div class="lb-loading">載入中…</div>
+    </div>
+  </div>
+</div>
+
+
+<div class="page active" id="page-learn">
+  <div class="page-inner">
+    <div class="section-label">選擇地區</div>
+    <div class="cont-pills" id="contPills">
+      <button class="cont-pill active" onclick="selCont('asia',this)">🌏 亞洲</button>
+      <button class="cont-pill" onclick="selCont('europe',this)">🌍 歐洲</button>
+      <button class="cont-pill" onclick="selCont('americas',this)">🌎 美洲</button>
+      <button class="cont-pill" onclick="selCont('africa',this)">🌍 非洲</button>
+      <button class="cont-pill" onclick="selCont('oceania',this)">🌊 大洋洲</button>
+      <button class="cont-pill" onclick="selCont('middleeast',this)">🕌 中東</button>
+      <button class="cont-pill" onclick="selCont('all',this)">🗺️ 全部</button>
+    </div>
+    <div class="learn-grid" id="learnGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════ QUIZ PAGE ══════════════ -->
+<div class="page" id="page-quiz">
+  <div class="page-inner">
+
+    <!-- Lobby -->
+    <div id="quizLobby">
+      <div class="stage-grid">
+        <!-- Stage 1 -->
+        <div class="stage-card">
+          <div class="stage-num">第一關</div>
+          <div class="stage-icon">🚩</div>
+          <div class="stage-name">看旗選答</div>
+          <div class="stage-desc">看國旗，從四個選項中選出正確的國家！</div>
+          <div class="stage-meta">
+            <span class="meta-tag">⏱ 每題 10 秒</span>
+            <span class="meta-tag">📝 15 題</span>
+            <span class="meta-tag">4 選 1</span>
+          </div>
+          <button class="stage-btn" onclick="startStage(1)">開始挑戰 →</button>
+        </div>
+        <!-- Stage 2 -->
+        <div class="stage-card">
+          <div class="stage-num">第二關</div>
+          <div class="stage-icon">🎯</div>
+          <div class="stage-name">國旗配對</div>
+          <div class="stage-desc">每組 5 面國旗在 30 秒內配對完成！共 3 組共 15 題。</div>
+          <div class="stage-meta">
+            <span class="meta-tag">⏱ 每組 30 秒</span>
+            <span class="meta-tag">📝 15 題</span>
+            <span class="meta-tag">5 對 5</span>
+          </div>
+          <button class="stage-btn" onclick="startStage(2)">開始挑戰 →</button>
+        </div>
+        <!-- Stage 3 -->
+        <div class="stage-card">
+          <div class="stage-num">第三關</div>
+          <div class="stage-icon">✏️</div>
+          <div class="stage-name">國旗填空</div>
+          <div class="stage-desc">看國旗，輸入國家名稱！可選擇中文或英文模式。</div>
+          <div class="stage-meta">
+            <span class="meta-tag">⏱ 每題 30 秒</span>
+            <span class="meta-tag">📝 10 題</span>
+            <span class="meta-tag">💡 提示 ×2</span>
+          </div>
+          <button class="stage-btn" onclick="startStage(3)">開始挑戰 →</button>
+        </div>
+        <!-- Stage 4 — BOSS -->
+        <div class="stage-card stage-card-boss">
+          <div class="stage-num">👹 魔王關</div>
+          <div class="stage-icon">💀</div>
+          <div class="stage-name">易混淆國旗大挑戰</div>
+          <div class="stage-desc">長得超像的國旗！法國 vs 比利時、查德 vs 羅馬尼亞……你分得清楚嗎？</div>
+          <div class="stage-meta">
+            <span class="meta-tag">⏱ 每組 30 秒</span>
+            <span class="meta-tag">📝 15 題</span>
+            <span class="meta-tag meta-tag-boss">🔥 高難度</span>
+          </div>
+          <button class="stage-btn stage-btn-boss" onclick="startStage(4)">接受挑戰 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arena -->
+    <div class="arena" id="quizArena">
+      <div class="arena-sticky">
+        <div class="arena-header">
+          <button class="arena-back" onclick="backToLobby()">←</button>
+          <div class="arena-title" id="arenaTitle"></div>
+          <div class="arena-score" id="arenaScore">0 / 0</div>
+        </div>
+        <div class="progress-row">
+          <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+        </div>
+      </div>
+      <div id="arenaBody"></div>
+      <div id="resultCard" class="result-card"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- POPUP -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="popup" id="popup">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <div class="popup-head">
+      <div class="popup-flag" id="pFlag"></div>
+      <div class="popup-name-zh" id="pNameZh"></div>
+      <div class="popup-name-en-row">
+        <div class="popup-name-en" id="pNameEn"></div>
+        <button class="speak-btn" onclick="speak(document.getElementById('pNameEn').textContent)" title="朗讀英文">🔊</button>
+      </div>
+    </div>
+    <div class="popup-tabs">
+      <button class="ptab active" onclick="ptab('basic',this)">📍 基本</button>
+      <button class="ptab" onclick="ptab('culture',this)">🎭 文化</button>
+      <button class="ptab" onclick="ptab('facts',this)">✨ 趣知識</button>
+    </div>
+    <div class="popup-body">
+      <div class="ppanel active" id="pp-basic"></div>
+      <div class="ppanel" id="pp-culture"></div>
+      <div class="ppanel" id="pp-facts"></div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════
+// DATA
+// ════════════════════════════════
+const DB = {
+  asia: [
+    { code:'JP', flag:'🇯🇵', name:'日本', nameEn:'Japan', capital:'東京', capitalEn:'Tokyo', lang:'日語（Japanese）', religion:'神道教、佛教', ethnic:'大和民族（約98%）、琉球人、阿伊努人', tier:1, culture:'日本文化以「禮儀」為核心，鞠躬是日常問候方式。傳統藝術包括茶道、花道、歌舞伎。日本人重視季節變化，春天賞櫻（花見）、秋天賞楓是重要的生活儀式。飲食文化精緻，壽司、拉麵、天婦羅聞名全球。', facts:['日本由約6,852個島嶼組成，但只有430個有人居住！','自動販賣機超過500萬台，平均每23人就有一台，連活螃蟹都能買到！','日本100歲以上的人瑞超過9萬人！'] },
+    { code:'KR', flag:'🇰🇷', name:'韓國', nameEn:'South Korea', capital:'首爾', capitalEn:'Seoul', lang:'韓語（Korean）', religion:'基督教、佛教，約半數無宗教', ethnic:'韓族，高度同質的民族國家', tier:1, culture:'韓國深受儒家思想影響，敬老尊賢是核心價值。韓流（Hallyu）席捲全球，K-pop、韓劇享譽國際。泡菜傳統列入UNESCO非物質文化遺產。跆拳道是韓國發明的武術。', facts:['韓國人過生日要喝海帶湯，代表感謝媽媽生育之恩！','韓國人出生就算1歲，每年元旦再加一歲！','韓國電競選手是超級明星，電競館比電影院還多！'] },
+    { code:'CN', flag:'🇨🇳', name:'中國', nameEn:'China', capital:'北京', capitalEn:'Beijing', lang:'普通話（Mandarin）', religion:'佛教、道教、民間信仰', ethnic:'漢族（約92%），另有55個少數民族', tier:1, culture:'中國擁有5,000年文明史，四大發明（造紙術、火藥、印刷術、指南針）改變全人類。春節是最重要節日，舞龍舞獅熱鬧非凡。書法、水墨畫、京劇都是代表性傳統藝術。', facts:['萬里長城全長超過21,000公里，但從太空其實看不到！','中國發明了冰淇淋，唐朝皇帝就在享用冰品！','中國是全球乒乓球第一強國！'] },
+    { code:'TH', flag:'🇹🇭', name:'泰國', nameEn:'Thailand', capital:'曼谷', capitalEn:'Bangkok', lang:'泰語（Thai）', religion:'佛教（約95%，上座部佛教）', ethnic:'泰族（約75%）、華裔泰人（14%）', tier:1, culture:'泰國被稱為「微笑之國」。合十禮（Wai）是傳統問候方式。佛教滲透日常生活，全國超過40,000座佛寺。潑水節（宋干節）是泰國新年。', facts:['曼谷的泰文全名長達169個字母，是世界最長的首都名稱！','泰國是世界第一大蘭花出口國！','暹羅貓是世界最古老的貓咪品種之一！'] },
+    { code:'IN', flag:'🇮🇳', name:'印度', nameEn:'India', capital:'新德里', capitalEn:'New Delhi', lang:'印地語、英語（官方），另有20+種語言', religion:'印度教（約80%）、伊斯蘭教、基督教', ethnic:'印度斯坦族、孟加拉族等數百個族群', tier:1, culture:'印度是世界最古老文明之一，瑜伽、冥想源於此地。寶萊塢每年產量是好萊塢兩倍以上。排燈節用萬盞燈慶祝光明戰勝黑暗。', facts:['西洋棋在印度發明，距今已有1,500多年歷史！','印度有超過1,600種語言和方言！','印度是全球最大的民主國家！'] },
+    { code:'SG', flag:'🇸🇬', name:'新加坡', nameEn:'Singapore', capital:'新加坡市', capitalEn:'Singapore City', lang:'英語、普通話、馬來語、泰米爾語（四官方語言）', religion:'佛教、道教、伊斯蘭教、基督教、印度教', ethnic:'華裔（約75%）、馬來裔（13%）、印裔（9%）', tier:2, culture:'新加坡是「花園城市」，多元種族和諧共處。小販中心（Hawker Centre）飲食文化列入UNESCO遺產。', facts:['新加坡是全球最小國家之一，卻擁有全球最繁忙的港口！','樟宜機場有世界最高的室內瀑布，高達40公尺！','在新加坡亂丟垃圾罰款高達1,000新幣！'] },
+    { code:'MY', flag:'🇲🇾', name:'馬來西亞', nameEn:'Malaysia', capital:'吉隆坡', capitalEn:'Kuala Lumpur', lang:'馬來語（官方）、英語', religion:'伊斯蘭教（官方，約61%）、佛教、基督教、印度教', ethnic:'馬來族（約57%）、華裔（約23%）、印裔（約7%）', tier:2, culture:'馬來西亞以多元文化為最大特色，三大民族的節日都是全國假日。椰漿飯（Nasi Lemak）是國民美食。', facts:['榴槤被稱為「水果之王」，許多地方禁止攜帶進飯店！','石油雙塔曾是世界最高建築，高452公尺！','大王花是世界最大的花，直徑達1公尺還有腐肉味！'] },
+    { code:'VN', flag:'🇻🇳', name:'越南', nameEn:'Vietnam', capital:'河內', capitalEn:'Hanoi', lang:'越南語（Vietnamese）', religion:'民間信仰、佛教、天主教', ethnic:'京族（Kinh，約86%）、另有54個少數民族', tier:2, culture:'越南文化深受中國和法國影響。奧黛（Áo dài）是傳統服飾。河粉（Phở）、法式麵包（Bánh mì）是文化融合的產物。', facts:['越南是世界第三大咖啡生產國！','越南的機車數量超過4,500萬輛！','下龍灣有超過1,600個島嶼！'] },
+    { code:'PH', flag:'🇵🇭', name:'菲律賓', nameEn:'Philippines', capital:'馬尼拉', capitalEn:'Manila', lang:'菲律賓語（Filipino）、英語', religion:'天主教（約82%，亞洲最大天主教國家）', ethnic:'他加祿族、宿霧族等超過170個民族', tier:2, culture:'菲律賓是亞洲唯一以天主教為主的國家，深受西班牙300年殖民影響。「巴雅尼漢（Bayanihan）」社區互助精神是核心價值。', facts:['吉普尼（Jeepney）彩色小巴由二戰美軍吉普車改裝而來！','菲律賓人有全球最長的耶誕季，從9月到1月，長達4個月！','巧克力山由超過1,200座圓錐形小山組成！'] },
+    { code:'ID', flag:'🇮🇩', name:'印尼', nameEn:'Indonesia', capital:'雅加達', capitalEn:'Jakarta', lang:'印尼語（Bahasa Indonesia）', religion:'伊斯蘭教（約87%，全球最大穆斯林人口國）', ethnic:'爪哇族（40%）、巽他族等超過300個民族', tier:2, culture:'印尼超過17,000個島嶼孕育了300多種民族文化。峇里島以印度教文化著稱。巴提克（Batik）蠟染布列入UNESCO遺產。', facts:['印尼擁有全球最多的活火山，超過130座！','科摩多巨蜥是世界最大的蜥蜴，長達3公尺！','爪哇島住著超過1.5億人！'] },
+    { code:'MM', flag:'🇲🇲', name:'緬甸', nameEn:'Myanmar', capital:'奈比多', capitalEn:'Naypyidaw', lang:'緬甸語（Burmese）', religion:'佛教（約88%）', ethnic:'緬族（68%）、撣族、克倫族等135個民族', tier:3, culture:'緬甸以佛教文化聞名，金色佛塔遍布全國，仰光的大金寺是東南亞最神聖的佛教聖地。傳統服飾籠基（Longyi）是男女皆穿的布裙。', facts:['緬甸有超過2,500座佛塔，比任何國家都多！','緬甸的翡翠產量占全球90%以上！','仰光大金寺塔頂鑲嵌了超過4,500顆鑽石！'] },
+    { code:'KH', flag:'🇰🇭', name:'柬埔寨', nameEn:'Cambodia', capital:'金邊', capitalEn:'Phnom Penh', lang:'高棉語（Khmer）', religion:'佛教（上座部，約95%）', ethnic:'高棉族（約97%）', tier:3, culture:'柬埔寨以吳哥窟文明聞名於世，是古代高棉帝國的遺址。高棉傳統舞蹈（Apsara Dance）列入UNESCO非物質文化遺產。', facts:['吳哥窟是世界上最大的宗教建築群，面積超過400平方公里！','柬埔寨的洞里薩湖是東南亞最大的淡水湖！','柬埔寨國旗上有吳哥窟的圖案，是全球少數國旗有建築圖案的！'] },
+    { code:'BD', flag:'🇧🇩', name:'孟加拉', nameEn:'Bangladesh', capital:'達卡', capitalEn:'Dhaka', lang:'孟加拉語（Bengali）', religion:'伊斯蘭教（約90%）', ethnic:'孟加拉族（約98%）', tier:3, culture:'孟加拉以孟加拉語和文學為文化核心，詩人泰戈爾是諾貝爾文學獎得主。黃麻是重要的傳統產業，編織文化豐富。', facts:['孟加拉是全球最大的衣物出口國之一！','達卡是全球人口密度最高的城市之一！','孟加拉語是世界第七大語言！'] },
+    { code:'PK', flag:'🇵🇰', name:'巴基斯坦', nameEn:'Pakistan', capital:'伊斯蘭馬巴德', capitalEn:'Islamabad', lang:'烏爾都語、英語（官方）', religion:'伊斯蘭教（約97%）', ethnic:'旁遮普族（44%）、普什圖族、信德族等', tier:3, culture:'巴基斯坦擁有古代印度河文明遺址。蘇非音樂（Qawwali）是重要的宗教藝術形式。板球是全國最受歡迎的運動。', facts:['世界第二高峰K2位於巴基斯坦！','巴基斯坦是全球最大的牛奶生產國之一！','卡拉蚩是南亞最大的城市之一，人口超過1,500萬！'] },
+    { code:'LK', flag:'🇱🇰', name:'斯里蘭卡', nameEn:'Sri Lanka', capital:'斯里賈亞瓦爾德納普拉科特', capitalEn:'Sri Jayawardenepura Kotte', lang:'僧伽羅語、泰米爾語（官方）', religion:'佛教（約70%）', ethnic:'僧伽羅族（74%）、泰米爾族（15%）', tier:3, culture:'斯里蘭卡是「印度洋之珠」，以錫蘭紅茶聞名全球。康提的佛牙節（Esala Perahera）是壯觀的宗教遊行。', facts:['斯里蘭卡是全球最大的肉桂生產國！','斯里蘭卡是世界上最早設立自然保護區的國家之一！','斯里蘭卡藍寶石是世界上最著名的寶石之一！'] },
+    { code:'NP', flag:'🇳🇵', name:'尼泊爾', nameEn:'Nepal', capital:'加德滿都', capitalEn:'Kathmandu', lang:'尼泊爾語（Nepali）', religion:'印度教（約81%）、佛教', ethnic:'切特里族、婆羅門族、馬嘉族等125個民族', tier:3, culture:'尼泊爾是世界屋脊，喜馬拉雅山脈的心臟。傳統節日達善節（Dashain）是最大的宗教慶典。雪巴族以高山嚮導聞名世界。', facts:['世界最高峰珠穆朗瑪峰（8,849公尺）在尼泊爾！','尼泊爾是世界上唯一非矩形國旗的國家！','尼泊爾境內有8座世界前10高峰！'] },
+    { code:'MN', flag:'🇲🇳', name:'蒙古', nameEn:'Mongolia', capital:'烏蘭巴托', capitalEn:'Ulaanbaatar', lang:'蒙古語（Mongolian）', religion:'藏傳佛教（約53%）', ethnic:'喀爾喀蒙古族（約85%）', tier:3, culture:'蒙古以遊牧文化著稱，蒙古包（Ger）是傳統住所。那達慕（Naadam）節慶包含摔跤、射箭、賽馬三大比賽。', facts:['蒙古是世界上人口密度最低的國家之一！','成吉思汗建立了人類史上最大的連續帝國！','蒙古有全球密度最高的野馬群！'] },
+    { code:'KZ', flag:'🇰🇿', name:'哈薩克', nameEn:'Kazakhstan', capital:'阿斯塔納', capitalEn:'Astana', lang:'哈薩克語、俄語（官方）', religion:'伊斯蘭教（約70%）', ethnic:'哈薩克族（68%）、俄羅斯族（19%）', tier:3, culture:'哈薩克是世界最大的內陸國，遊牧民族傳統深厚。鷹獵（Berkutchi）是傳統捕獵文化，被列入UNESCO遺產。', facts:['哈薩克是世界第九大國，面積比西歐加總還大！','蘋果的祖先可能源自哈薩克！','哈薩克有世界最大的太空發射場——拜科努爾！'] },
+    { code:'UZ', flag:'🇺🇿', name:'烏茲別克', nameEn:'Uzbekistan', capital:'塔什干', capitalEn:'Tashkent', lang:'烏茲別克語（Uzbek）', religion:'伊斯蘭教（約88%）', ethnic:'烏茲別克族（84%）', tier:3, culture:'烏茲別克是古絲綢之路的核心，撒馬爾罕和布哈拉是古代伊斯蘭文明的中心。傳統手工藝如絲綢刺繡聞名世界。', facts:['烏茲別克是世界上最大的棉花生產國之一！','撒馬爾罕有超過2,500年歷史，是中亞最古老的城市之一！','烏茲別克沒有出海口，卻被兩個同樣沒有出海口的國家包圍！'] },
+    { code:'GE', flag:'🇬🇪', name:'喬治亞', nameEn:'Georgia', capital:'第比利斯', capitalEn:'Tbilisi', lang:'喬治亞語（Georgian）', religion:'東正教（約84%）', ethnic:'喬治亞族（87%）', tier:3, culture:'喬治亞擁有獨特的喬治亞字母，是世界上最古老的書寫系統之一。葡萄酒文化已有8,000年歷史，是世界葡萄酒的發源地之一。', facts:['喬治亞字母是世界上最美麗的書寫系統之一！','喬治亞有超過8,000年的葡萄酒釀造史！','世界最深的洞穴克魯伯亞洞（-2,197公尺）在喬治亞！'] },
+    { code:'TW', flag:'🇹🇼', name:'台灣', nameEn:'Taiwan', capital:'台北', capitalEn:'Taipei', lang:'中文（普通話）、台語、客家語', religion:'佛教、道教、民間信仰（多元混合）', ethnic:'漢族（95%，含閩南、客家）、原住民族（16族）', tier:1, culture:'台灣以民主自由、美食文化和熱情好客著稱。夜市文化是台灣獨特的飲食體驗，珍珠奶茶風靡全球。傳統廟會文化與現代科技完美共存，是世界最重要的半導體生產地。', facts:['珍珠奶茶（Bubble Tea）發明於台灣台中！','台灣是全球最重要的半導體晶片生產地，台積電（TSMC）占全球高端晶片70%以上！','台灣有2,000公尺以上的高山超過200座，玉山是東北亞最高峰（3,952公尺）！'] },
+  ],
+  europe: [
+    { code:'FR', flag:'🇫🇷', name:'法國', nameEn:'France', capital:'巴黎', capitalEn:'Paris', lang:'法語（French）', religion:'天主教為主', ethnic:'法蘭西人', tier:1, culture:'法國以時尚、美食、藝術聞名世界。艾菲爾鐵塔最初是臨時建築！法國葡萄酒文化和法式料理是UNESCO非物質文化遺產。', facts:['法國是全球遊客最多的國家，每年超過9千萬訪客！','法式長棍麵包（Baguette）已列入UNESCO文化遺產。','法國人每年喝掉超過10億公升的葡萄酒！'] },
+    { code:'DE', flag:'🇩🇪', name:'德國', nameEn:'Germany', capital:'柏林', capitalEn:'Berlin', lang:'德語（German）', religion:'基督教（新教、天主教）', ethnic:'德意志人', tier:1, culture:'德國以工程精密、哲學音樂聞名。貝多芬、巴哈都是德國人。啤酒節（Oktoberfest）是全球最知名的節慶之一。', facts:['德國有超過1,500種啤酒品牌！','德國發明了幼稚園（Kindergarten）！','德國的高速公路（Autobahn）部分路段沒有速限！'] },
+    { code:'IT', flag:'🇮🇹', name:'義大利', nameEn:'Italy', capital:'羅馬', capitalEn:'Rome', lang:'義大利語（Italian）', religion:'天主教', ethnic:'義大利人', tier:1, culture:'義大利是文藝復興的搖籃，達文西、米開朗基羅都在這裡創作。飲食文化是國家驕傲，每個地區都有獨特美食。', facts:['義大利有超過600種不同形狀的義大利麵！','梵蒂岡位於羅馬市中心，是世界最小的國家！','義大利是全球擁有最多UNESCO世界遺產的國家之一！'] },
+    { code:'ES', flag:'🇪🇸', name:'西班牙', nameEn:'Spain', capital:'馬德里', capitalEn:'Madrid', lang:'西班牙語（Spanish）', religion:'天主教', ethnic:'西班牙人（卡斯提爾人、加泰隆尼亞人等）', tier:1, culture:'西班牙以弗拉明戈舞、鬥牛文化著稱。高第的建築讓巴塞隆納成為建築聖地。', facts:['西班牙人吃晚餐通常在晚上9-10點！','每年的番茄節（La Tomatina）會扔掉超過100噸番茄！','西班牙語是全球第二多人使用的母語！'] },
+    { code:'GB', flag:'🇬🇧', name:'英國', nameEn:'United Kingdom', capital:'倫敦', capitalEn:'London', lang:'英語（English）', religion:'聖公會為主', ethnic:'英格蘭人、蘇格蘭人、威爾斯人、北愛爾蘭人', tier:1, culture:'英國是工業革命發源地，下午茶文化舉世聞名。皇室文化是全球焦點。', facts:['英國發明了足球，第一個現代規則在1863年制定！','英國女王擁有全英國所有未認領的天鵝！','倫敦地鐵是世界上最古老的地下鐵路，建於1863年！'] },
+    { code:'NO', flag:'🇳🇴', name:'挪威', nameEn:'Norway', capital:'奧斯陸', capitalEn:'Oslo', lang:'挪威語（Norwegian）', religion:'路德宗基督教', ethnic:'挪威人（北歐斯堪地那維亞人）', tier:2, culture:'挪威以壯麗峽灣和北極光著稱，幸福指數長期名列前茅。維京人文化是挪威歷史的重要部分。', facts:['挪威是極光最佳觀賞地之一！','挪威人發明了現代越野滑雪！','挪威政府為每個國民設立石油基金！'] },
+    { code:'GR', flag:'🇬🇷', name:'希臘', nameEn:'Greece', capital:'雅典', capitalEn:'Athens', lang:'希臘語（Greek）', religion:'東正教（約90%）', ethnic:'希臘人', tier:2, culture:'希臘是西方文明的搖籃，哲學、民主、奧運都起源於此。地中海飲食被列為UNESCO無形文化遺產。', facts:['奧林匹克運動會起源於古希臘，至今已有2,800年歷史！','希臘有超過6,000個島嶼，但只有227個有人居住！','希臘語是世界上最古老的字母語系之一！'] },
+    { code:'NL', flag:'🇳🇱', name:'荷蘭', nameEn:'Netherlands', capital:'阿姆斯特丹', capitalEn:'Amsterdam', lang:'荷蘭語（Dutch）', religion:'基督教，約半數無宗教', ethnic:'荷蘭人', tier:2, culture:'荷蘭以風車、鬱金香、單車文化聞名，是林布蘭和梵谷的故鄉。荷蘭人說話非常直接，是世界聞名的文化特點。', facts:['荷蘭有超過2,300萬輛腳踏車，幾乎每人兩輛！','荷蘭有超過一半的國土低於海平面！','荷蘭是全球第二大農產品出口國！'] },
+    { code:'PT', flag:'🇵🇹', name:'葡萄牙', nameEn:'Portugal', capital:'里斯本', capitalEn:'Lisbon', lang:'葡萄牙語（Portuguese）', religion:'天主教（約81%）', ethnic:'葡萄牙人', tier:2, culture:'葡萄牙是大航海時代的先驅，開創了連接世界各地的海洋航線。法朵（Fado）音樂是葡萄牙的靈魂，已列入UNESCO遺產。', facts:['葡萄牙語是全球第六大語言，超過2.6億人使用！','葡萄牙是歐洲最西端的國家！','里斯本的有軌電車系統已有100多年歷史！'] },
+    { code:'SE', flag:'🇸🇪', name:'瑞典', nameEn:'Sweden', capital:'斯德哥爾摩', capitalEn:'Stockholm', lang:'瑞典語（Swedish）', religion:'路德宗基督教', ethnic:'瑞典人', tier:2, culture:'瑞典以高品質生活、設計美學和環保意識著稱。IKEA、H&M、Spotify、Minecraft都是瑞典品牌。', facts:['瑞典是諾貝爾獎的創始國！','瑞典有超過22萬個湖泊！','ABBA、ABBA！瑞典是全球人均音樂出口量最高的國家！'] },
+    { code:'CH', flag:'🇨🇭', name:'瑞士', nameEn:'Switzerland', capital:'伯恩', capitalEn:'Bern', lang:'德語、法語、義大利語、羅曼什語（四官方語言）', religion:'基督教（天主教、新教）', ethnic:'德裔（63%）、法裔（23%）、義裔（8%）', tier:2, culture:'瑞士以永久中立國、精密鐘錶和巧克力聞名。阿爾卑斯山文化孕育出約德爾唱法和氂牛賽跑等傳統。', facts:['瑞士巧克力每年人均消費量是世界最高！','瑞士有超過7,000種起司品種！','日內瓦有聯合國歐洲總部和許多國際組織！'] },
+    { code:'AT', flag:'🇦🇹', name:'奧地利', nameEn:'Austria', capital:'維也納', capitalEn:'Vienna', lang:'德語（German）', religion:'天主教（約57%）', ethnic:'奧地利人', tier:2, culture:'奧地利是音樂之國，莫札特、海頓、舒伯特都是奧地利人。維也納金色大廳是全球最著名的音樂廳。', facts:['維也納連續多年被評為世界最宜居城市！','奧地利是紅牛（Red Bull）的發源地！','奧地利人說的德語被認為是最標準的德語之一！'] },
+    { code:'PL', flag:'🇵🇱', name:'波蘭', nameEn:'Poland', capital:'華沙', capitalEn:'Warsaw', lang:'波蘭語（Polish）', religion:'天主教（約85%）', ethnic:'波蘭人（約97%）', tier:2, culture:'波蘭歷史上曾多次被瓜分，但文化始終頑強存活。肖邦是波蘭的音樂驕傲，波蘭餃子（Pierogi）是國民美食。', facts:['波蘭是歐洲最大的琥珀出口國！','居禮夫人（Marie Curie）是波蘭人！','波蘭有全歐洲最大的城堡之一——馬爾堡城堡！'] },
+    { code:'CZ', flag:'🇨🇿', name:'捷克', nameEn:'Czechia', capital:'布拉格', capitalEn:'Prague', lang:'捷克語（Czech）', religion:'無宗教（約66%）', ethnic:'捷克人（90%）', tier:2, culture:'捷克以美麗的中世紀城堡和啤酒文化聞名。布拉格老城廣場和天文鐘是歐洲最美麗的景點之一。', facts:['捷克人均啤酒消費量是全球第一！','布拉格城堡是世界上最大的古代城堡！','捷克是波西米亞水晶玻璃的故鄉！'] },
+    { code:'HU', flag:'🇭🇺', name:'匈牙利', nameEn:'Hungary', capital:'布達佩斯', capitalEn:'Budapest', lang:'匈牙利語（Hungarian）', religion:'天主教（約37%）', ethnic:'匈牙利人（約97%）', tier:2, culture:'匈牙利以溫泉文化、辣椒粉和李斯特音樂聞名。布達佩斯被稱為「東歐巴黎」，多瑙河夜景是世界絕景。', facts:['匈牙利語是歐洲最難學的語言之一！','匈牙利人發明了魔術方塊（Rubik\'s Cube）！','布達佩斯有全歐洲最多的溫泉浴場！'] },
+    { code:'RO', flag:'🇷🇴', name:'羅馬尼亞', nameEn:'Romania', capital:'布加勒斯特', capitalEn:'Bucharest', lang:'羅馬尼亞語（Romanian）', religion:'東正教（約87%）', ethnic:'羅馬尼亞人（約89%）', tier:2, culture:'羅馬尼亞以德古拉伯爵的傳說著名，特蘭西瓦尼亞地區的城堡吸引全球遊客。傳統民間藝術和刺繡是羅馬尼亞的文化遺產。', facts:['羅馬尼亞有全歐洲最大的建築之一——議會宮！','德古拉的原型弗拉德三世是真實存在的羅馬尼亞王公！','羅馬尼亞的錫納亞城堡美如童話！'] },
+    { code:'UA', flag:'🇺🇦', name:'烏克蘭', nameEn:'Ukraine', capital:'基輔', capitalEn:'Kyiv', lang:'烏克蘭語（Ukrainian）', religion:'東正教', ethnic:'烏克蘭人（77%）', tier:2, culture:'烏克蘭是歐洲面積最大的國家之一。基輔洞窟修道院是東正教最重要的聖地。烏克蘭傳統刺繡（Vyshyvanka）是民族文化象徵。', facts:['烏克蘭是歐洲穀倉，是全球最大的小麥出口國之一！','基輔是全球最多麗栗樹（Horse Chestnut）的城市！','烏克蘭有超過35,000件UNESCO世界遺產候選！'] },
+    { code:'BE', flag:'🇧🇪', name:'比利時', nameEn:'Belgium', capital:'布魯塞爾', capitalEn:'Brussels', lang:'荷蘭語、法語、德語（三官方語言）', religion:'天主教（約60%）', ethnic:'佛拉芒人（58%）、瓦隆人（31%）', tier:2, culture:'比利時是巧克力和華夫餅的故鄉，啤酒文化列入UNESCO遺產。布魯塞爾是歐盟和NATO的總部所在地。', facts:['比利時巧克力是全球最有名的巧克力！','比利時人均每年吃掉11公斤的巧克力！','比利時有全球最高密度的城堡！'] },
+    { code:'DK', flag:'🇩🇰', name:'丹麥', nameEn:'Denmark', capital:'哥本哈根', capitalEn:'Copenhagen', lang:'丹麥語（Danish）', religion:'路德宗基督教（約75%）', ethnic:'丹麥人', tier:2, culture:'丹麥是「幸福指數」長年全球第一，北歐設計美學（New Nordic）影響全世界。安徒生童話是丹麥送給全球孩子的禮物。', facts:['LEGO積木是丹麥發明的！','丹麥人均幸福指數常年全球第一！','哥本哈根人騎腳踏車的比例是全球最高之一！'] },
+    { code:'FI', flag:'🇫🇮', name:'芬蘭', nameEn:'Finland', capital:'赫爾辛基', capitalEn:'Helsinki', lang:'芬蘭語、瑞典語（官方）', religion:'路德宗基督教（約69%）', ethnic:'芬蘭人', tier:2, culture:'芬蘭是聖誕老公公的故鄉，羅瓦涅米是官方聖誕老公公村。桑拿文化是芬蘭最重要的傳統，幾乎每個家庭都有桑拿。', facts:['芬蘭有超過188,000個湖泊！','聖誕老公公的故鄉是芬蘭的羅瓦涅米！','芬蘭人均桑拿數量是全球最高，每2個人就有1個桑拿！'] },
+    { code:'IE', flag:'🇮🇪', name:'愛爾蘭', nameEn:'Ireland', capital:'都柏林', capitalEn:'Dublin', lang:'愛爾蘭語、英語（官方）', religion:'天主教（約69%）', ethnic:'愛爾蘭人', tier:2, culture:'愛爾蘭以塞爾特文化、綠色草原和傳統音樂著稱。聖派翠克節（St. Patrick\'s Day）是全球最受歡迎的民族節慶。', facts:['愛爾蘭吉尼斯啤酒是世界上最著名的黑啤酒！','愛爾蘭是哈利波特作者JK羅琳最喜愛的國家！','愛爾蘭有超過30,000個古代凱爾特石圈！'] },
+  ],
+  americas: [
+    { code:'US', flag:'🇺🇸', name:'美國', nameEn:'United States', capital:'華盛頓特區', capitalEn:'Washington D.C.', lang:'英語（無官方語言）', religion:'基督教為主', ethnic:'多元移民國家（歐裔、非裔、拉丁裔、亞裔等）', tier:1, culture:'美國是「移民熔爐」，多元文化融合創造出好萊塢、爵士樂、嘻哈文化。自由女神像是自由與希望的象徵。', facts:['黃石公園是全球第一個國家公園，地下有超級火山！','美國有50個州，國旗上的50顆星各代表一個州！','美國人每年吃掉約100億個熱狗！'] },
+    { code:'CA', flag:'🇨🇦', name:'加拿大', nameEn:'Canada', capital:'渥太華', capitalEn:'Ottawa', lang:'英語、法語（雙官方語言）', religion:'基督教為主', ethnic:'多元移民國家（英裔、法裔、亞裔等）', tier:1, culture:'加拿大以多元文化政策著稱，冰上曲棍球是國民運動。楓葉是加拿大的國家象徵。', facts:['加拿大是世界第二大國，面積約台灣的270倍！','加拿大生產全球約80%的楓糖漿！','加拿大全國超過200萬個湖泊！'] },
+    { code:'BR', flag:'🇧🇷', name:'巴西', nameEn:'Brazil', capital:'巴西利亞', capitalEn:'Brasília', lang:'葡萄牙語（Portuguese）', religion:'天主教為主（約64%）', ethnic:'白人、混血（Pardo）、非裔、原住民', tier:1, culture:'巴西以桑巴舞、嘉年華會（Rio Carnival）、足球文化聞名世界。亞馬遜雨林是地球之肺。', facts:['巴西是全球最大的咖啡生產國！','亞馬遜雨林有一半在巴西，擁有全球10%的物種！','巴西是唯一5度拿到世界盃足球賽冠軍的國家！'] },
+    { code:'MX', flag:'🇲🇽', name:'墨西哥', nameEn:'Mexico', capital:'墨西哥城', capitalEn:'Mexico City', lang:'西班牙語（Spanish）', religion:'天主教為主（約77%）', ethnic:'混血（Mestizo）為主（約62%），另有原住民族群', tier:1, culture:'墨西哥文化融合原住民與西班牙傳統，亡靈節（Día de Muertos）是UNESCO文化遺產。馬雅和阿茲特克文明遺址遍布全國。', facts:['巧克力和香草都是墨西哥原住民發明的！','墨西哥城建立在古代阿茲特克帝國首都的遺址上！','墨西哥有全球最多的UNESCO非物質文化遺產之一！'] },
+    { code:'AR', flag:'🇦🇷', name:'阿根廷', nameEn:'Argentina', capital:'布宜諾斯艾利斯', capitalEn:'Buenos Aires', lang:'西班牙語（Spanish）', religion:'天主教為主', ethnic:'歐裔移民後代（義大利裔、西班牙裔）為主', tier:2, culture:'阿根廷是探戈舞的故鄉，牛排文化和足球是國民驕傲。布宜諾斯艾利斯被稱為「南美的巴黎」。', facts:['阿根廷是全球人均牛肉消費量最高的國家之一！','探戈起源於布宜諾斯艾利斯的移民社區，是UNESCO文化遺產！','梅西是阿根廷的國寶！'] },
+    { code:'CO', flag:'🇨🇴', name:'哥倫比亞', nameEn:'Colombia', capital:'波哥大', capitalEn:'Bogotá', lang:'西班牙語（Spanish）', religion:'天主教（約79%）', ethnic:'混血（49%）、白人（37%）、非裔（11%）', tier:2, culture:'哥倫比亞以咖啡文化著稱，胡安·巴爾德斯（Juan Valdez）是其咖啡形象大使。累帕斯嘉年華是世界重要的文化遺產。', facts:['哥倫比亞是世界上最優質咖啡的主要產地！','哥倫比亞是世界上蝴蝶種類最多的國家！','哥倫比亞的卡塔赫納是加勒比海最美麗的殖民地城市！'] },
+    { code:'PE', flag:'🇵🇪', name:'秘魯', nameEn:'Peru', capital:'利馬', capitalEn:'Lima', lang:'西班牙語、蓋丘亞語（Quechua）', religion:'天主教為主', ethnic:'印第安原住民（約45%）、混血（約37%）', tier:2, culture:'秘魯是印加帝國的發源地，馬丘比丘是世界七大奇景之一。利馬是南美的美食之都，秘魯料理享譽全球。', facts:['馬鈴薯原產於秘魯，世界上有超過3,000種馬鈴薯品種！','秘魯的亞馬遜雨林面積占全國60%！','馬丘比丘建於約1450年，是印加帝國遺留的謎樣古城！'] },
+    { code:'CL', flag:'🇨🇱', name:'智利', nameEn:'Chile', capital:'聖地牙哥', capitalEn:'Santiago', lang:'西班牙語（Spanish）', religion:'天主教（約55%）', ethnic:'混血（88%）、馬普切族等原住民', tier:2, culture:'智利是世界最細長的國家，南北綿延4,300公里，地形從沙漠到冰川。復活節島（Rapa Nui）的神秘石像是世界奇觀。', facts:['智利是世界上最細長的國家，從北到南有4,300公里！','阿塔卡馬沙漠是地球上最乾燥的非極地沙漠！','智利的神秘復活節島有超過900座巨型石像（摩艾）！'] },
+    { code:'VE', flag:'🇻🇪', name:'委內瑞拉', nameEn:'Venezuela', capital:'卡拉卡斯', capitalEn:'Caracas', lang:'西班牙語（Spanish）', religion:'天主教（約71%）', ethnic:'混血（51%）、白人（43%）、非裔（4%）', tier:3, culture:'委內瑞拉以天使瀑布（全球最高瀑布）和美麗的卡里貝海岸著稱。委內瑞拉選美文化獨特，產生最多國際選美冠軍。', facts:['天使瀑布是世界上最高的瀑布，高達979公尺！','委內瑞拉是世界上石油儲量最豐富的國家！','委內瑞拉產生了最多的環球小姐和宇宙小姐冠軍！'] },
+    { code:'EC', flag:'🇪🇨', name:'厄瓜多', nameEn:'Ecuador', capital:'基多', capitalEn:'Quito', lang:'西班牙語（Spanish）', religion:'天主教（約74%）', ethnic:'混血（71%）、蒙塔烏比奧族（7%）、原住民', tier:3, culture:'厄瓜多是加拉巴哥群島的所在地，達爾文進化論的靈感來源。基多是世界上第一個被列入UNESCO世界遺產的城市之一。', facts:['加拉巴哥群島的獨特生態啟發了達爾文進化論！','厄瓜多是世界最大的香蕉出口國！','厄瓜多雖然叫赤道國，但首都基多的氣候卻因海拔高而涼爽宜人！'] },
+    { code:'CU', flag:'🇨🇺', name:'古巴', nameEn:'Cuba', capital:'哈瓦那', capitalEn:'Havana', lang:'西班牙語（Spanish）', religion:'天主教（約60%）', ethnic:'白人（64%）、混血（27%）、非裔（9%）', tier:2, culture:'古巴以雪茄、蘭姆酒、莎莎舞和復古美國老車著稱。哈瓦那的殖民地建築保存了60年代的時光。', facts:['古巴的哈瓦那大雪茄是世界上最貴的雪茄！','古巴有全球最高的識字率之一！','古巴的1950年代美國老爺車是世界上獨一無二的奇景！'] },
+    { code:'JM', flag:'🇯🇲', name:'牙買加', nameEn:'Jamaica', capital:'京斯敦', capitalEn:'Kingston', lang:'英語、牙買加巴土瓦語（Jamaican Patois）', religion:'基督教（約64%）', ethnic:'非裔（92%）', tier:3, culture:'牙買加是雷鬼樂（Reggae）和巴布·馬利（Bob Marley）的故鄉。拉斯特法里（Rastafari）文化是重要的精神運動。', facts:['牙買加是雷鬼音樂（Reggae）的發源地！','牙買加盛產世界最頂級的藍山咖啡！','牙買加是加勒比海短跑強國，產生了博爾特等多位世界紀錄保持者！'] },
+    { code:'TT', flag:'🇹🇹', name:'千里達及托巴哥', nameEn:'Trinidad and Tobago', capital:'西班牙港', capitalEn:'Port of Spain', lang:'英語（官方）', religion:'基督教（約57%）', ethnic:'印裔（35%）、非裔（35%）、混血（23%）', tier:3, culture:'千里達及托巴哥是鋼鼓（Steel Pan）樂器的發源地，嘉年華是加勒比海最盛大的慶典之一。卡里普索音樂是其重要文化遺產。', facts:['鋼鼓（Steel Pan）在千里達及托巴哥發明，是20世紀唯一發明的原聲樂器！','千里達及托巴哥是全球石油天然氣最豐富的小國之一！','千里達嘉年華是全球最熱鬧的嘉年華之一！'] },
+    { code:'BO', flag:'🇧🇴', name:'玻利維亞', nameEn:'Bolivia', capital:'蘇克雷', capitalEn:'Sucre', lang:'西班牙語、蓋丘亞語、艾馬拉語等36種官方語言', religion:'天主教（約70%）', ethnic:'印第安原住民（62%）', tier:3, culture:'玻利維亞有兩個首都，是世界上最高海拔的國家之一。的的喀喀湖是南美最大的高原湖，也是烏羅斯族人的浮島家園。', facts:['玻利維亞的烏尤尼鹽湖是世界上最大的鹽湖，天晴時會反射天空如鏡子！','玻利維亞有兩個首都：憲法首都蘇克雷和政府首都拉巴斯！','的的喀喀湖是世界上海拔最高的可通航湖泊！'] },
+    { code:'PY', flag:'🇵🇾', name:'巴拉圭', nameEn:'Paraguay', capital:'亞松森', capitalEn:'Asunción', lang:'西班牙語、瓜拉尼語（雙官方語言）', religion:'天主教（約89%）', ethnic:'混血（95%）', tier:3, culture:'巴拉圭是南美洲唯一雙語國家，瓜拉尼語日常生活中廣泛使用。傳統音樂豎琴演奏享有盛名。', facts:['巴拉圭是世界上最大的電力出口國之一（水力發電）！','巴拉圭是南美唯一沒有出海口的國家！','巴拉圭的傳統瓜拉尼語是少數原住民語言成為正式官方語言的例子！'] },
+    { code:'UY', flag:'🇺🇾', name:'烏拉圭', nameEn:'Uruguay', capital:'蒙得維的亞', capitalEn:'Montevideo', lang:'西班牙語（Spanish）', religion:'無宗教（約38%）、天主教（36%）', ethnic:'白人（87%）、混血（8%）', tier:3, culture:'烏拉圭是南美洲最進步的民主國家之一，率先全球合法化大麻。探戈文化和足球是最重要的傳統。', facts:['烏拉圭是全球第一個合法化大麻的國家！','烏拉圭舉辦了第一屆世界盃足球賽（1930年）！','烏拉圭是南美洲識字率最高、貧富差距最小的國家！'] },
+    { code:'GT', flag:'🇬🇹', name:'瓜地馬拉', nameEn:'Guatemala', capital:'瓜地馬拉市', capitalEn:'Guatemala City', lang:'西班牙語（官方），另有23種馬雅語言', religion:'天主教（40%）、基督新教（42%）', ethnic:'拉丁化印第安混血（56%）、馬雅原住民（44%）', tier:3, culture:'瓜地馬拉是馬雅文明的核心地區，蒂卡爾（Tikal）是最壯觀的馬雅遺址之一。傳統馬雅紡織品色彩豐富，是重要的文化遺產。', facts:['瓜地馬拉有全球最多的活躍馬雅傳統社區！','巧克力飲料（Xocoatl）起源於瓜地馬拉的馬雅文明！','阿蒂特蘭湖被稱為世界上最美麗的湖泊！'] },
+  ],
+  africa: [
+    { code:'ZA', flag:'🇿🇦', name:'南非', nameEn:'South Africa', capital:'普利托里亞', capitalEn:'Pretoria', lang:'祖魯語、科薩語、南非荷蘭語等11種官方語言', religion:'基督教（86%）', ethnic:'黑人（80%）、有色人種（9%）、白人（8%）', tier:1, culture:'南非是「彩虹之國」，11種官方語言象徵多元文化。曼德拉精神（Ubuntu哲學）——「我因你而存在」——是南非最重要的人文遺產。', facts:['南非是世界上唯一有11種官方語言的國家！','南非的開普敦是非洲最美麗的城市之一！','南非是世界上最大的黃金和白金生產國！'] },
+    { code:'EG', flag:'🇪🇬', name:'埃及', nameEn:'Egypt', capital:'開羅', capitalEn:'Cairo', lang:'阿拉伯語（Arabic）', religion:'伊斯蘭教（約90%）、科普特基督教（10%）', ethnic:'埃及人（97%）', tier:1, culture:'埃及是人類最古老文明之一，金字塔和獅身人面像是世界最著名的奇觀。尼羅河孕育了數千年的農業文明。', facts:['埃及的吉薩金字塔是古代七大奇觀中唯一保存至今的！','埃及象形文字是世界上最古老的書寫系統之一！','開羅是非洲人口最多的城市！'] },
+    { code:'NG', flag:'🇳🇬', name:'奈及利亞', nameEn:'Nigeria', capital:'阿布加', capitalEn:'Abuja', lang:'英語（官方），另有豪薩語、約魯巴語、伊博語等500多種語言', religion:'伊斯蘭教（54%）、基督教（40%）', ethnic:'豪薩-富拉尼族（29%）、約魯巴族（21%）、伊博族（18%）等', tier:2, culture:'奈及利亞是非洲最大的經濟體，「諾萊塢」（Nollywood）是全球第三大電影產業。奈及利亞傳統音樂節拍影響了全球非裔流行音樂。', facts:['奈及利亞是非洲人口最多的國家，擁有超過2億人口！','諾萊塢每年產出的電影比好萊塢還多！','奈及利亞是世界上語言最多樣的國家之一，有超過500種語言！'] },
+    { code:'KE', flag:'🇰🇪', name:'肯亞', nameEn:'Kenya', capital:'奈洛比', capitalEn:'Nairobi', lang:'史瓦希利語、英語（官方）', religion:'基督教（85%）', ethnic:'基庫尤族（17%）、盧希亞族（14%）、盧奧族（10%）等44個部族', tier:2, culture:'肯亞是馬賽馬拉（Maasai Mara）野生動物保護區的所在地，是全球最佳觀獸地點。馬賽族傳統文化是東非最具代表性的文化。', facts:['肯亞長跑選手是世界上最強的馬拉松跑手！','馬賽馬拉是地球上最壯觀的動物大遷徙（Great Migration）之一！','肯亞的奈洛比是非洲第一個有國家公園在城市邊上的首都！'] },
+    { code:'ET', flag:'🇪🇹', name:'衣索比亞', nameEn:'Ethiopia', capital:'阿迪斯阿貝巴', capitalEn:'Addis Ababa', lang:'阿姆哈拉語（官方）', religion:'東正教（44%）、伊斯蘭教（34%）', ethnic:'奧羅莫族（34%）、阿姆哈拉族（27%）、提格雷族（6%）等80個民族', tier:2, culture:'衣索比亞是咖啡的發源地，擁有獨特的埃塞俄比亞東正教傳統。提格雷岩鑿教堂是世界上最不可思議的宗教建築之一。', facts:['衣索比亞是全球咖啡的發源地！','衣索比亞是非洲唯一從未被殖民的國家！','衣索比亞有自己的曆法，比公曆晚7至8年！'] },
+    { code:'GH', flag:'🇬🇭', name:'迦納', nameEn:'Ghana', capital:'阿克拉', capitalEn:'Accra', lang:'英語（官方）', religion:'基督教（71%）、伊斯蘭教（18%）', ethnic:'阿坎族（47%）、莫西-達戈姆巴族（16%）等', tier:2, culture:'迦納是非洲第一個獨立的撒哈拉以南國家，是泛非主義的象徵。阿散蒂（Ashanti）傳統文化和肯特布（Kente cloth）聞名世界。', facts:['迦納是世界第二大可可生產國！','迦納是非洲最穩定的民主國家之一！','迦納的阿散蒂肯特布色彩豐富，是非洲最著名的傳統布料！'] },
+    { code:'TZ', flag:'🇹🇿', name:'坦尚尼亞', nameEn:'Tanzania', capital:'三蘭港', capitalEn:'Dar es Salaam', lang:'史瓦希利語、英語（官方）', religion:'基督教（61%）、伊斯蘭教（35%）', ethnic:'班圖族（95%，包含130個部族）', tier:2, culture:'坦尚尼亞擁有非洲最高峰吉力馬扎羅山和塞倫蓋提（Serengeti）國家公園。尚吉巴島是東非香料和絲路文化的中心。', facts:['非洲最高峰吉力馬扎羅山（5,895公尺）在坦尚尼亞！','塞倫蓋提有全球最大的陸地動物遷徙！','尚吉巴島是全球最重要的丁香產地之一！'] },
+    { code:'MA', flag:'🇲🇦', name:'摩洛哥', nameEn:'Morocco', capital:'拉巴特', capitalEn:'Rabat', lang:'阿拉伯語、塔馬塞特語（官方）、法語廣泛使用', religion:'伊斯蘭教（99%）', ethnic:'阿拉伯-柏柏爾混血（99%）', tier:2, culture:'摩洛哥是阿拉伯、柏柏爾和歐洲文化的交匯點，古城（Medina）迷宮般的街道是中世紀城市規劃的活化石。薄荷茶文化和摩洛哥拼貼磁磚（Zellige）聞名世界。', facts:['摩洛哥的馬拉喀什古城是全球最大的傳統市集（Souk）！','撒哈拉沙漠有一部分在摩洛哥，遊客可以騎駱駝穿越沙丘！','阿爾加尼亞堅果油（Argan Oil）只在摩洛哥生產！'] },
+    { code:'SN', flag:'🇸🇳', name:'塞內加爾', nameEn:'Senegal', capital:'達卡', capitalEn:'Dakar', lang:'法語（官方）、沃洛夫語廣泛使用', religion:'伊斯蘭教（約96%）', ethnic:'沃洛夫族（43%）、普拉爾族（24%）等', tier:3, culture:'塞內加爾是西非最穩定的民主國家之一，音樂文化豐富，姆巴拉克斯（Mbalax）音樂是重要的文化象徵。', facts:['塞內加爾是非洲少數多次和平民主移交政權的國家！','塞內加爾的粉紅湖（Lac Rose）因藻類而呈現粉紅色！','達卡是非洲最西端的首都！'] },
+    { code:'CM', flag:'🇨🇲', name:'喀麥隆', nameEn:'Cameroon', capital:'雅溫得', capitalEn:'Yaoundé', lang:'法語、英語（官方）', religion:'基督教（70%）、伊斯蘭教（20%）', ethnic:'卡梅倫高地人（31%）、赤道班圖族（19%）等200多個民族', tier:3, culture:'喀麥隆被稱為「非洲的縮影」，北部有沙漠、中部有草原、南部有熱帶雨林。傳統草原王國文化豐富多彩。', facts:['喀麥隆被稱為「非洲的縮影」，擁有非洲大陸的幾乎所有地形！','喀麥隆足球隊是非洲最成功的球隊之一！','喀麥隆有超過270個民族，講超過250種語言！'] },
+    { code:'CI2', flag:'🇨🇮', name:'象牙海岸', nameEn:'Ivory Coast', capital:'雅穆蘇克羅', capitalEn:'Yamoussoukro', lang:'法語（官方）', religion:'伊斯蘭教（43%）、基督教（34%）', ethnic:'阿坎族（28%）、格爾族（18%）等60多個民族', tier:3, culture:'象牙海岸是西非最大的可可生產國，也是非洲最大的腰果出口國。傳統面具文化是重要的藝術遺產。', facts:['象牙海岸生產全球約40%的可可豆！','象牙海岸是非洲最大的腰果出口國！','雅穆蘇克羅的和平聖母大殿（仿聖彼得大教堂）是全球最大的教堂之一！'] },
+    { code:'AO', flag:'🇦🇴', name:'安哥拉', nameEn:'Angola', capital:'羅安達', capitalEn:'Luanda', lang:'葡萄牙語（官方）', religion:'天主教（41%）、基督新教（38%）', ethnic:'奧文本多族（37%）、金邦杜族（25%）等', tier:3, culture:'安哥拉有豐富的石油資源，羅安達是非洲最貴的城市之一。傳統林巴（Limbo）舞蹈和桑巴音樂是非洲-葡萄牙文化融合的產物。', facts:['安哥拉是非洲主要的石油出口國！','安哥拉曾是全球鑽石主要產地之一！','羅安達曾被評為全球生活費最高的城市！'] },
+    { code:'ZM', flag:'🇿🇲', name:'尚比亞', nameEn:'Zambia', capital:'盧薩卡', capitalEn:'Lusaka', lang:'英語（官方），另有班圖語系約72種語言', religion:'基督教（85%）', ethnic:'班圖族（99%，72個部族）', tier:3, culture:'尚比亞以維多利亞瀑布（Victoria Falls）聞名世界，這是世界上最大的瀑布。尚比亞是非洲銅礦帶的中心，有「銅帶」之稱。', facts:['維多利亞瀑布位於尚比亞和辛巴威邊界，是世界上最大的瀑布（按流量）！','尚比亞是全球最大的銅生產國之一！','尚比亞的盧安瓜谷步行獵遊是非洲最原始的野生動物體驗！'] },
+    { code:'RW', flag:'🇷🇼', name:'盧安達', nameEn:'Rwanda', capital:'基加利', capitalEn:'Kigali', lang:'盧安達語、英語、法語（官方）', religion:'天主教（44%）、基督新教（38%）', ethnic:'胡圖族（84%）、圖西族（15%）、特瓦族（1%）', tier:3, culture:'盧安達在1994年種族滅絕後實現驚人的復興，被稱為「非洲新加坡」。女性在國會中佔超過60%，是全球女性政治參與最高的國家。', facts:['盧安達在1994年種族滅絕後成功重建，是非洲最安全乾淨的國家之一！','盧安達是全球女性議員比例最高的國家，超過60%！','盧安達是山地大猩猩最後的棲息地之一！'] },
+    { code:'MG', flag:'🇲🇬', name:'馬達加斯加', nameEn:'Madagascar', capital:'安塔那那利佛', capitalEn:'Antananarivo', lang:'馬拉加斯語、法語（官方）', religion:'基督教（85%）', ethnic:'印度尼西亞-非洲混血的馬拉加斯人（約20個族群）', tier:3, culture:'馬達加斯加是世界上最大的島嶼國家之一，80%以上的動植物是特有種，被稱為「第八大洲」。狐猴（Lemur）只在這裡生活。', facts:['馬達加斯加有超過100種狐猴，全球最多！','馬達加斯加80%的動植物只在這個島上存在！','馬達加斯加的猴麵包樹（Baobab）可以活超過1,000年！'] },
+    { code:'MW', flag:'🇲🇼', name:'馬拉威', nameEn:'Malawi', capital:'里朗威', capitalEn:'Lilongwe', lang:'奇切瓦語、英語（官方）', religion:'基督教（77%）', ethnic:'奇切瓦族（32%）、倫達族（17%）等', tier:3, culture:'馬拉威被稱為「非洲溫暖的心」，馬拉威湖是非洲第三大湖泊，以豐富的慈鯛魚著稱。傳統文戈傳統音樂和面具舞蹈是重要文化遺產。', facts:['馬拉威湖擁有全球最多種類的淡水魚（超過1,000種慈鯛）！','馬拉威是非洲最貧窮但也是最好客的國家之一！','馬拉威湖是全球潛水員的秘密天堂！'] },
+    { code:'BW', flag:'🇧🇼', name:'波札那', nameEn:'Botswana', capital:'嘉伯隆里', capitalEn:'Gaborone', lang:'英語、塞茨瓦納語（官方）', religion:'基督教（79%）', ethnic:'茨瓦納族（79%）、卡朗加族（11%）等', tier:3, culture:'波札那是非洲最成功的民主和發展故事之一。奧卡萬戈三角洲（Okavango Delta）是全球最大的內陸三角洲，野生動物天堂。', facts:['波札那是全球最大的鑽石生產國之一！','奧卡萬戈三角洲是世界上最大的內陸三角洲，完全流入沙漠而不入海！','波札那在獨立後50年內從非洲最貧窮國家之一變為中高收入國家！'] },
+    { code:'MZ', flag:'🇲🇿', name:'莫三比克', nameEn:'Mozambique', capital:'馬布多', capitalEn:'Maputo', lang:'葡萄牙語（官方）', religion:'天主教（28%）、伊斯蘭教（18%）、基督新教（18%）', ethnic:'馬夸族（26%）、奇索卡族（9%）等10個班圖族群', tier:3, culture:'莫三比克擁有2,470公里長的印度洋海岸線，是非洲海灘最美的國家之一。葡萄牙殖民文化和非洲傳統文化融合形成獨特的莫三比克文化。', facts:['莫三比克有全球最大的卡薩達卡薩達人像！','莫三比克的腰果是全球品質最好的之一！','馬布多是非洲最被低估的首都之一，有美麗的葡式建築！'] },
+    { code:'MR', flag:'🇲🇷', name:'茅利塔尼亞', nameEn:'Mauritania', capital:'努瓦克肖特', capitalEn:'Nouakchott', lang:'阿拉伯語（官方）', religion:'伊斯蘭教（幾乎100%）', ethnic:'摩爾人（阿拉伯-柏柏爾族）（80%）、黑非洲人（20%）', tier:3, culture:'茅利塔尼亞是沙漠中的國家，撒哈拉沙漠覆蓋了大部分國土。古城辛蓋提（Chinguetti）是伊斯蘭世界第五大聖城。', facts:['茅利塔尼亞有世界上最長的貨運火車，長達3公里！','古城辛蓋提是撒哈拉沙漠中的伊斯蘭聖城！','茅利塔尼亞是全球最後廢除奴隸制的國家之一（2007年）！'] },
+    { code:'NE', flag:'🇳🇪', name:'尼日', nameEn:'Niger', capital:'尼亞美', capitalEn:'Niamey', lang:'法語（官方）', religion:'伊斯蘭教（99%）', ethnic:'豪薩族（53%）、傑爾馬-桑海族（21%）等', tier:3, culture:'尼日是撒哈拉沙漠和薩赫勒地區的交匯處，圖阿雷格族（Tuareg）游牧文化是尼日最著名的文化象徵。', facts:['尼日擁有全球最大的鈾礦之一！','圖阿雷格族是世界上最後的游牧沙漠文明之一！','尼日的格雷亞特柯巴爾（Gar Gra-Gar）是撒哈拉沙漠中最神秘的地貌之一！'] },
+    { code:'ML', flag:'🇲🇱', name:'馬利', nameEn:'Mali', capital:'巴馬科', capitalEn:'Bamako', lang:'法語（官方），另有班巴拉語等13種國家語言', religion:'伊斯蘭教（95%）', ethnic:'班巴拉族（34%）、圖阿雷格族（10%）等', tier:3, culture:'馬利擁有廷巴克圖（Timbuktu）古城，是中世紀非洲最重要的學術和商業中心。古老的多貢族（Dogon）文化是世界上最神秘的傳統文化之一。', facts:['廷巴克圖在中世紀是「黃金城市」，是全球最富有的地方之一！','馬利帝國在14世紀是全球最大的帝國之一！','多貢族對天狼星（Sirius）的天文知識令科學家至今不解！'] },
+  ],
+  oceania: [
+    { code:'AU', flag:'🇦🇺', name:'澳洲', nameEn:'Australia', capital:'坎培拉', capitalEn:'Canberra', lang:'英語（事實上的官方語言）', religion:'基督教（52%）', ethnic:'澳洲白人（58%）、澳洲原住民（3%）、亞裔（17%）', tier:1, culture:'澳洲以獨特的野生動物和大自然著稱，原住民（Aboriginal）文化是世界上最古老的連續文化，已有至少65,000年歷史。', facts:['澳洲的大堡礁是世界上最大的珊瑚礁系統！','澳洲是唯一一個占據整個大陸的國家！','袋鼠的數量比澳洲人口還多！'] },
+    { code:'NZ', flag:'🇳🇿', name:'紐西蘭', nameEn:'New Zealand', capital:'威靈頓', capitalEn:'Wellington', lang:'英語、毛利語（官方）', religion:'基督教（37%）', ethnic:'歐裔（70%）、毛利族（16%）、太平洋島嶼裔（8%）', tier:1, culture:'紐西蘭是毛利族（Māori）的故鄉，哈卡（Haka）戰舞是最著名的文化表演。全球首個賦予婦女選舉權的國家。', facts:['紐西蘭是第一個賦予女性投票權的國家（1893年）！','紐西蘭幾維鳥（Kiwi）是全球唯一不會飛的鳥之一！','電影《魔戒》和《哈比人》都在紐西蘭取景！'] },
+    { code:'FJ', flag:'🇫🇯', name:'斐濟', nameEn:'Fiji', capital:'蘇瓦', capitalEn:'Suva', lang:'英語、斐濟語、印地語（官方）', religion:'基督教（65%）、印度教（27%）', ethnic:'斐濟族（57%）、印裔斐濟人（37%）', tier:2, culture:'斐濟是南太平洋最著名的旅遊天堂，以清澈的海水和友善的人民聞名。卡瓦（Kava）儀式是斐濟最重要的社交禮儀。', facts:['斐濟有超過300個島嶼！','斐濟是南太平洋橄欖球最強國之一！','斐濟的七人制橄欖球隊贏得了2016年奧運金牌！'] },
+    { code:'PG', flag:'🇵🇬', name:'巴布亞紐幾內亞', nameEn:'Papua New Guinea', capital:'莫士比港', capitalEn:'Port Moresby', lang:'英語、托克皮辛語（Tok Pisin）（官方）', religion:'基督教（96%）', ethnic:'美拉尼西亞人、巴布亞人（超過800個部族）', tier:2, culture:'巴布亞紐幾內亞擁有全球最多樣的文化，有超過800種語言，占全球語言的11%。傳統面具舞蹈和羽毛裝飾在各部族祭典中非常壯觀。', facts:['巴布亞紐幾內亞有超過800種語言，是全球語言最多樣的國家！','全球最大的蝴蝶——亞歷山德拉鳥翼蝶（翼展可達30公分）在這裡！','巴布亞紐幾內亞的高地部落直到20世紀才有記錄接觸到外部世界！'] },
+    { code:'WS', flag:'🇼🇸', name:'薩摩亞', nameEn:'Samoa', capital:'阿皮亞', capitalEn:'Apia', lang:'薩摩亞語、英語（官方）', religion:'基督教（97%）', ethnic:'薩摩亞人（93%）', tier:3, culture:'薩摩亞是太平洋文化的中心，法阿薩摩亞（Fa\'a Samoa，薩摩亞人的生活方式）是重要的文化精神。傳統紋身（Pe\'a）是成年儀式的一部分。', facts:['薩摩亞是時區最靠近日期變更線的國家之一，曾跳過一整天！','薩摩亞傳統刺青是世界上最複雜的傳統刺青！','薩摩亞是美式足球選手比例最高的國家！'] },
+    { code:'TO', flag:'🇹🇴', name:'東加', nameEn:'Tonga', capital:'努瓜婁發', capitalEn:"Nuku'alofa", lang:'東加語、英語（官方）', religion:'基督教（97%）', ethnic:'東加人（97%）', tier:3, culture:'東加是太平洋唯一從未被殖民的王國，至今仍是君主立憲國。傳統塔帕（Tapa）樹皮布藝術是東加最重要的文化遺產。', facts:['東加是太平洋唯一從未被完全殖民的國家！','東加的橄欖球隊是太平洋最強勁的隊伍之一！','東加是全球肥胖率最高的國家之一（因文化上以胖為美）！'] },
+    { code:'VU', flag:'🇻🇺', name:'萬那杜', nameEn:'Vanuatu', capital:'維拉港', capitalEn:'Port Vila', lang:'貝爾斯語（Bislama）、英語、法語（官方）', religion:'基督教（82%）', ethnic:'美拉尼西亞人（99%）', tier:3, culture:'萬那杜是高空跳繩（Land Diving）的發源地，這是蹦極跳的前身。當地人用藤蔓從木塔上跳下，是成年男性的傳統儀式。', facts:['蹦極跳（Bungee jumping）的靈感來自萬那杜的藤蔓跳躍儀式！','萬那杜是全球最多活火山的島國之一！','萬那杜被列為全球「幸福星球指數」最高的國家之一！'] },
+    { code:'SB', flag:'🇸🇧', name:'所羅門群島', nameEn:'Solomon Islands', capital:'荷尼阿拉', capitalEn:'Honiara', lang:'英語（官方），另有大量皮欽英語和當地語言', religion:'基督教（92%）', ethnic:'美拉尼西亞人（95%）', tier:3, culture:'所羅門群島以二戰太平洋戰場著稱，瓜達康納爾島（Guadalcanal）是二戰最激烈的戰役之一的發生地。傳統獨木舟航行和雕刻文化豐富。', facts:['所羅門群島是二戰太平洋戰場的中心，有大量沉船遺跡供潛水！','所羅門群島的珊瑚礁是全球第三大珊瑚礁生態系統！','所羅門群島有超過70種特有鳥類！'] },
+  ],
+  middleeast: [
+    { code:'TR', flag:'🇹🇷', name:'土耳其', nameEn:'Turkey', capital:'安卡拉', capitalEn:'Ankara', lang:'土耳其語（Turkish）', religion:'伊斯蘭教（約99%）', ethnic:'土耳其人（70-75%）、庫德族（18%）', tier:1, culture:'土耳其橫跨歐亞大陸，是兩個大洲的交匯點。鄂圖曼帝國留下了伊斯坦堡這座充滿歷史的城市。土耳其浴（Hammam）和土耳其咖啡是重要的文化傳統。', facts:['土耳其是全球茶葉消費量最高的國家之一！','伊斯坦堡是唯一橫跨兩個大洲的城市！','聖誕老公公的原型聖尼古拉斯主教誕生在土耳其！'] },
+    { code:'IR', flag:'🇮🇷', name:'伊朗', nameEn:'Iran', capital:'德黑蘭', capitalEn:'Tehran', lang:'波斯語（Farsi）', religion:'伊斯蘭教（什葉派，約95%）', ethnic:'波斯族（61%）、亞塞拜然族（16%）、庫德族（10%）', tier:2, culture:'伊朗是古代波斯帝國的繼承者，擁有豐富的藝術和詩歌傳統。波斯詩人如魯米（Rumi）和哈菲茲（Hafiz）的作品影響了整個伊斯蘭世界。', facts:['伊朗是世界上最大的藏紅花（Saffron）生產國！','波斯地毯是世界上最著名的手工藝品之一！','伊朗的波斯波利斯遺址是古代世界最壯觀的宮殿之一！'] },
+    { code:'IQ', flag:'🇮🇶', name:'伊拉克', nameEn:'Iraq', capital:'巴格達', capitalEn:'Baghdad', lang:'阿拉伯語、庫德語（官方）', religion:'伊斯蘭教（97%）', ethnic:'阿拉伯族（75-80%）、庫德族（15-20%）', tier:2, culture:'伊拉克是兩河文明（美索不達米亞）的誕生地，人類最早的文字、城市和法典都在這裡產生。', facts:['人類最早的文明之一——蘇美爾文明起源於伊拉克！','漢謨拉比法典是歷史上最早的成文法律，起源於伊拉克地區！','巴格達在阿巴斯王朝時期是全球最大、最先進的城市！'] },
+    { code:'IL', flag:'🇮🇱', name:'以色列', nameEn:'Israel', capital:'耶路撒冷', capitalEn:'Jerusalem', lang:'希伯來語、阿拉伯語（官方）', religion:'猶太教（75%）、伊斯蘭教（18%）', ethnic:'猶太人（75%）、阿拉伯人（20%）', tier:2, culture:'以色列是猶太、基督教和伊斯蘭三大宗教的聖地。耶路撒冷舊城是世界上宗教密度最高的地方。以色列是「創業國度」，科技創新能力舉世聞名。', facts:['以色列是全球人均諾貝爾獎最多的國家之一！','以色列的死海是地球上最低點（水面低於海平面430公尺）！','以色列是中東地區最重要的科技創新中心！'] },
+    { code:'JO', flag:'🇯🇴', name:'約旦', nameEn:'Jordan', capital:'安曼', capitalEn:'Amman', lang:'阿拉伯語（Arabic）', religion:'伊斯蘭教（97%）', ethnic:'阿拉伯族（98%）', tier:2, culture:'約旦是中東最穩定的國家之一，以玫瑰紅城佩特拉（Petra）聞名。約旦人以好客和友善著稱，是中東最安全的旅遊目的地之一。', facts:['佩特拉（Petra）是世界七大奇跡之一，完全由玫瑰紅岩石雕刻而成！','約旦的死海是地球上最低的地方，浮力超強讓人無法沉入水中！','約旦是世界上最古老有人居住城市之一——耶利哥（Jericho）的所在地！'] },
+    { code:'LB', flag:'🇱🇧', name:'黎巴嫩', nameEn:'Lebanon', capital:'貝魯特', capitalEn:'Beirut', lang:'阿拉伯語（官方），法語、英語廣泛使用', religion:'伊斯蘭教（61%）、天主教和東正教（37%）', ethnic:'阿拉伯族（95%）', tier:2, culture:'黎巴嫩被稱為「中東的巴黎」，貝魯特是文化和美食的中心。菲尼基人（Phoenicia）的字母影響了幾乎所有現代書寫系統。', facts:['黎巴嫩雪松是全球最著名的樹木之一，出現在國旗上！','菲尼基字母（起源於黎巴嫩地區）是現代幾乎所有字母系統的祖先！','黎巴嫩是中東人均高等教育率最高的國家之一！'] },
+    { code:'KW', flag:'🇰🇼', name:'科威特', nameEn:'Kuwait', capital:'科威特市', capitalEn:'Kuwait City', lang:'阿拉伯語（Arabic）', religion:'伊斯蘭教（74%）', ethnic:'科威特人（30%）、其他阿拉伯裔（27%）、南亞裔（37%）', tier:2, culture:'科威特是波斯灣小國，以石油財富著稱。傳統珍珠採集文化是科威特石油時代之前的主要產業。', facts:['科威特的人均GDP是全球最高之一！','科威特在1990年被伊拉克占領，隔年在聯軍幫助下復國！','科威特90%的淡水靠海水淡化，是全球最依賴海水淡化的國家之一！'] },
+    { code:'QA', flag:'🇶🇦', name:'卡達', nameEn:'Qatar', capital:'杜哈', capitalEn:'Doha', lang:'阿拉伯語（Arabic）', religion:'伊斯蘭教（67%）', ethnic:'卡達人（11%）、其他阿拉伯裔（13%）、南亞裔（58%）', tier:2, culture:'卡達以天然氣財富和半島電視台（Al Jazeera）聞名。2022年世界盃是卡達最重要的國際舞台。卡達是全球人均碳排放量最高的國家之一。', facts:['卡達舉辦了2022年FIFA世界盃！','卡達是全球人均GDP最高的國家之一！','卡達的Al Jazeera電視台改變了阿拉伯世界的媒體生態！'] },
+    { code:'OM', flag:'🇴🇲', name:'阿曼', nameEn:'Oman', capital:'馬斯喀特', capitalEn:'Muscat', lang:'阿拉伯語（Arabic）', religion:'伊斯蘭教（伊巴底派，約75%）', ethnic:'阿拉伯族為主', tier:2, culture:'阿曼是中東最古老的獨立國家之一，以乳香（Frankincense）貿易聞名古代世界。阿曼是中東最開放友善的伊斯蘭國家之一，以中立外交著稱。', facts:['阿曼是乳香（Frankincense）的主要產地，聖誕節的禮物之一！','阿曼的蘇哈爾是中世紀印度洋最重要的港口之一！','阿曼是中東第一個開放女性參政的國家之一！'] },
+    { code:'YE', flag:'🇾🇪', name:'葉門', nameEn:'Yemen', capital:'薩那', capitalEn:'Sana\'a', lang:'阿拉伯語（Arabic）', religion:'伊斯蘭教（99%，遜尼派和什葉派）', ethnic:'阿拉伯族為主', tier:3, culture:'葉門擁有獨特的阿拉伯建築遺產，薩那古城的蜂巢式土樓是世界上最古老的高樓建築之一，已列入UNESCO世界遺產。', facts:['薩那是世界上海拔最高的首都之一（2,300公尺）！','葉門是摩卡咖啡（Mocha coffee）的發源地！','索科特拉島被稱為「印度洋的加拉帕戈斯」，有許多奇特的特有植物！'] },
+  ],
+};
+
+function allDB() { return Object.values(DB).flat(); }
+
+// update pill labels with counts
+function updatePillCounts() {
+  const contMap = {
+    asia:'🌏 亞洲', europe:'🌍 歐洲', americas:'🌎 美洲',
+    africa:'🌍 非洲', oceania:'🌊 大洋洲', middleeast:'🕌 中東'
+  };
+  document.querySelectorAll('.cont-pill').forEach(btn => {
+    const fn = btn.getAttribute('onclick');
+    const m = fn && fn.match(/'(\w+)'/);
+    if (!m) return;
+    const key = m[1];
+    if (key === 'all') {
+      btn.textContent = `🗺️ 全部 (${allDB().length})`;
+    } else if (DB[key]) {
+      const label = contMap[key] || key;
+      btn.textContent = `${label} (${DB[key].length})`;
+    }
+  });
+}
+
+// confusingFlags codes — excluded from main pool
+const confusingCodes = new Set([
+  'FR','BE','TD','RO','IE','CI','HT','LI','NZ','AU',
+  'SI','SK','MC','ID2','PL','SG2','RU','LU','NL2','HR',
+  'CZ','PH2','CL','TH2','MM','KG','MK','EE','FI','IS'
+]);
+
+// Main pool: full DB minus confusing flags
+function getMainPool() {
+  return allDB().filter(c => !confusingCodes.has(c.code));
+}
+
+// ════════════════════════════════
+// STATE
+// ════════════════════════════════
+let learnedSet = new Set(JSON.parse(localStorage.getItem('flagLearned')||'[]'));
+let stars = parseInt(localStorage.getItem('flagStars')||'0');
+let currentCont = 'asia';
+let currentPopupCode = null;
+
+// Quiz state
+let qStage = 0;
+let qPointPerQ = 7;
+let qQuestions = [], qCurrent = 0, qScore = 0;
+let timerInterval = null;
+let timerSec = 0;
+let matchState = { pairs:[], matched:new Set(), selLeft:null, selRight:null, groupIndex:0 };
+
+// ════════════════════════════════
+// NAV
+// ════════════════════════════════
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.topnav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (id === 'quiz') showLobby();
+}
+
+// ════════════════════════════════
+// LEARN
+// ════════════════════════════════
+function selCont(cont, btn) {
+  currentCont = cont;
+  document.querySelectorAll('.cont-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLearn();
+}
+function renderLearn() {
+  let list;
+  if (currentCont === 'all') list = allDB();
+  else list = DB[currentCont] || [];
+  list = [...list].sort((a,b) => a.nameEn.localeCompare(b.nameEn));
+  document.getElementById('learnGrid').innerHTML = list.map(c => `
+    <div class="country-card ${learnedSet.has(c.code)?'learned':''}" onclick="openPopup('${c.code}')">
+      <div class="learned-ribbon">已學會</div>
+      <span class="c-flag">${c.flag}</span>
+      <div class="c-name">${c.name}</div>
+      <div class="c-name-en">${c.nameEn}</div>
+      <div class="c-capital">🏛 ${c.capital}</div>
+      <button class="c-speak" onclick="event.stopPropagation();speak('${c.nameEn.replace(/'/g,"\\'")}')">🔊</button>
+    </div>`).join('');
+}
+
+function openPopup(code) {
+  const c = allDB().find(x => x.code===code);
+  if (!c) return;
+  currentPopupCode = code;
+  document.getElementById('pFlag').textContent = c.flag;
+  document.getElementById('pNameZh').textContent = c.name;
+  document.getElementById('pNameEn').textContent = c.nameEn;
+  // reset tabs
+  document.querySelectorAll('.ptab').forEach((b,i)=>b.classList.toggle('active',i===0));
+  document.querySelectorAll('.ppanel').forEach((p,i)=>p.classList.toggle('active',i===0));
+  // basic
+  document.getElementById('pp-basic').innerHTML = `
+    <div class="info-row"><div class="info-ico">🏛️</div><div><div class="info-lbl">首都</div><div class="info-val">${c.capital}<div class="info-val-en">${c.capitalEn}</div></div></div></div>
+    <div class="info-row"><div class="info-ico">🗣️</div><div><div class="info-lbl">官方語言</div><div class="info-val">${c.lang}</div></div></div>
+    <div class="info-row"><div class="info-ico">🙏</div><div><div class="info-lbl">主要宗教</div><div class="info-val">${c.religion}</div></div></div>
+    <div class="info-row"><div class="info-ico">👥</div><div><div class="info-lbl">主要民族</div><div class="info-val">${c.ethnic}</div></div></div>`;
+  // culture
+  document.getElementById('pp-culture').innerHTML = `<div class="culture-text">${c.culture}</div>`;
+  // facts
+  const wikiUrl = `https://zh.wikipedia.org/wiki/${encodeURIComponent(c.name)}`;
+  document.getElementById('pp-facts').innerHTML =
+    c.facts.map((f,i)=>`<div class="fact-card"><div class="fact-num">趣知識 ${i+1}</div>💡 ${f}</div>`).join('') +
+    `<div class="wiki-more-wrap">
+      <a class="wiki-more-btn" href="${wikiUrl}" target="_blank" rel="noopener noreferrer" onclick="openWiki(event, '${wikiUrl}')">🔎 前往維基百科</a>
+    </div>`;
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('popup').scrollTop = 0;
+}
+
+function openWiki(event, url) {
+  if (event) event.stopPropagation();
+  const opened = window.open(url, '_blank', 'noopener,noreferrer');
+  if (!opened) {
+    window.location.href = url;
+  }
+}
+
+function ptab(id, btn) {
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  document.querySelectorAll('.ppanel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pp-'+id).classList.add('active');
+}
+function overlayClick(e) { if (e.target===document.getElementById('overlay')) closePopup(); }
+function closePopup() { document.getElementById('overlay').classList.remove('show'); currentPopupCode=null; }
+function markLearned() {
+  if (!currentPopupCode||learnedSet.has(currentPopupCode)) return;
+  learnedSet.add(currentPopupCode);
+  localStorage.setItem('flagLearned',JSON.stringify([...learnedSet]));
+  addStars(1);
+  document.getElementById('learnedBtnIcon').textContent='✅';
+  document.getElementById('learnedBtnTxt').textContent='已學會！';
+  document.getElementById('learnedBtn').classList.add('done');
+  renderLearn();
+}
+
+// ════════════════════════════════
+// HELPERS
+// ════════════════════════════════
+function shuffle(a){return[...a].sort(()=>Math.random()-.5)}
+// Stars by accuracy:
+ // completed = 1 star, >=60% = 2 stars, >=80% = 3 stars, 100% = 4 stars
+
+function addStars(n){
+  stars+=n;
+  localStorage.setItem('flagStars',stars);
+  document.getElementById('starCount').textContent=stars;
+  // sync to Firebase
+  if (window._db && window._playerName) {
+    const ref = window._db.collection('players').doc(window._playerName);
+    ref.set({ name: window._playerName, totalStars: stars, updatedAt: Date.now() }, { merge: true })
+      .catch(()=>{});
+  }
+}
+
+function recordHistory(stage, score, maxScore) {
+  const stageNames = ['','看旗選答','國旗配對','國旗填空','魔王關'];
+  const stageIcons = ['','🚩','🎯','✏️','👹'];
+  const pct = maxScore > 0 ? Math.round(score/maxScore*100) : 0;
+  const starsEarned = calcStarsByAccuracy(score, maxScore);
+
+  const now = new Date();
+  const dateKey = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+  const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  const record = {
+    date: dateKey, time: timeStr, ts: Date.now(),
+    stage, name: stageNames[stage], icon: stageIcons[stage],
+    score, maxScore, pct, stars: starsEarned,
+    player: window._playerName || '匿名'
+  };
+
+  // local backup
+  const hist = JSON.parse(localStorage.getItem('flagHistory') || '[]');
+  hist.unshift(record);
+  if (hist.length > 100) hist.splice(100);
+  localStorage.setItem('flagHistory', JSON.stringify(hist));
+
+  // Firebase sync
+  if (window._db) {
+    window._db.collection('history').add(record).catch(()=>{});
+    // Update leaderboard
+    updateLeaderboard(stage, score, starsEarned);
+  }
+}
+function confetti(){
+  const c=['#FFD23F','#FF6B6B','#4FC3F7','#43C880','#B39DDB'];
+  for(let i=0;i<50;i++){const p=document.createElement('div');p.className='confetti-piece';p.style.cssText=`left:${Math.random()*100}vw;top:-10px;background:${c[i%5]};animation-delay:${Math.random()*1}s;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px`;document.body.appendChild(p);setTimeout(()=>p.remove(),2800);}
+}
+function showStreak(n) {
+  const el=document.createElement('div'); el.className='streak-pop';
+  el.textContent=`🔥 連答 ${n} 題！`; document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1600);
+}
+
+// ════════════════════════════════
+// CONFUSING FLAGS DATA (Stage 4)
+// ════════════════════════════════
+const confusingFlags = [
+  { code:'FR', flag:'🇫🇷', name:'法國', nameEn:'France', tier:1 },
+  { code:'BE', flag:'🇧🇪', name:'比利時', nameEn:'Belgium', tier:1 },
+  { code:'TD', flag:'🇹🇩', name:'查德', nameEn:'Chad', tier:1 },
+  { code:'RO', flag:'🇷🇴', name:'羅馬尼亞', nameEn:'Romania', tier:1 },
+  { code:'IE', flag:'🇮🇪', name:'愛爾蘭', nameEn:'Ireland', tier:1 },
+  { code:'CI', flag:'🇨🇮', name:'象牙海岸', nameEn:'Ivory Coast', tier:1 },
+  { code:'HT', flag:'🇭🇹', name:'海地', nameEn:'Haiti', tier:1 },
+  { code:'LI', flag:'🇱🇮', name:'列支敦士登', nameEn:'Liechtenstein', tier:1 },
+  { code:'NZ', flag:'🇳🇿', name:'紐西蘭', nameEn:'New Zealand', tier:1 },
+  { code:'AU', flag:'🇦🇺', name:'澳洲', nameEn:'Australia', tier:1 },
+  { code:'SI', flag:'🇸🇮', name:'斯洛維尼亞', nameEn:'Slovenia', tier:1 },
+  { code:'SK', flag:'🇸🇰', name:'斯洛伐克', nameEn:'Slovakia', tier:1 },
+  { code:'MC', flag:'🇲🇨', name:'摩納哥', nameEn:'Monaco', tier:1 },
+  { code:'ID2', flag:'🇮🇩', name:'印尼', nameEn:'Indonesia', tier:1 },
+  { code:'PL', flag:'🇵🇱', name:'波蘭', nameEn:'Poland', tier:1 },
+  { code:'SG2', flag:'🇸🇬', name:'新加坡', nameEn:'Singapore (alt)', tier:1 },
+  { code:'RU', flag:'🇷🇺', name:'俄羅斯', nameEn:'Russia', tier:1 },
+  { code:'LU', flag:'🇱🇺', name:'盧森堡', nameEn:'Luxembourg', tier:1 },
+  { code:'NL2', flag:'🇳🇱', name:'荷蘭', nameEn:'Netherlands', tier:1 },
+  { code:'HR', flag:'🇭🇷', name:'克羅埃西亞', nameEn:'Croatia', tier:1 },
+  { code:'CZ', flag:'🇨🇿', name:'捷克', nameEn:'Czechia', tier:1 },
+  { code:'PH2', flag:'🇵🇭', name:'菲律賓', nameEn:'Philippines', tier:1 },
+  { code:'CL', flag:'🇨🇱', name:'智利', nameEn:'Chile', tier:1 },
+  { code:'TH2', flag:'🇹🇭', name:'泰國', nameEn:'Thailand', tier:1 },
+  { code:'MM', flag:'🇲🇲', name:'緬甸', nameEn:'Myanmar', tier:1 },
+  { code:'KG', flag:'🇰🇬', name:'吉爾吉斯', nameEn:'Kyrgyzstan', tier:1 },
+  { code:'MK', flag:'🇲🇰', name:'北馬其頓', nameEn:'North Macedonia', tier:1 },
+  { code:'EE', flag:'🇪🇪', name:'愛沙尼亞', nameEn:'Estonia', tier:1 },
+  { code:'FI', flag:'🇫🇮', name:'芬蘭', nameEn:'Finland', tier:1 },
+  { code:'IS', flag:'🇮🇸', name:'冰島', nameEn:'Iceland', tier:1 },
+];
+
+// ════════════════════════════════
+// START STAGE
+// ════════════════════════════════
+// Points per question per stage:
+// S1: 15q × 7pt = 105 (rounds ≈100)  S2: 15q × 7pt = 105
+// S3: 10q × 10pt = 100               S4: 15q × 7pt = 105
+const STAGE_QS    = [0, 15, 15, 10, 15];
+const STAGE_PTS   = [0,  7,  7, 10,  7];
+
+/** Build exactly `total` questions from pool, no repeats if pool large enough */
+function buildQuestions(pool, total) {
+  if (pool.length === 0) return [];
+  // shuffle full pool first, then if still not enough, append reshuffled copies
+  let result = shuffle(pool);
+  while (result.length < total) {
+    result = result.concat(shuffle(pool));
+  }
+  return result.slice(0, total);
+}
+
+function startStage(stage) {
+  qStage = stage;
+  qCurrent = 0; qScore = 0;
+
+  let pool = (stage === 4) ? confusingFlags : getMainPool();
+  if (pool.length < 5) { alert('題庫不足，請稍後再試！'); return; }
+
+  qPointPerQ = STAGE_PTS[stage] || 7;
+  const total = STAGE_QS[stage] || 15;
+  qQuestions = buildQuestions(pool, total);
+
+  document.getElementById('quizLobby').style.display = 'none';
+  document.getElementById('quizArena').classList.add('active');
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('heroBanner').style.display = 'none';
+
+  const titles = ['','🚩 看旗選答','🎯 國旗配對','✏️ 國旗填空','👹 魔王關'];
+  document.getElementById('arenaTitle').textContent = titles[stage];
+  document.getElementById('arenaScore').textContent = `0 分`;
+
+  const fillClasses = ['','prog-s1','prog-s2','prog-s3','prog-s1'];
+  document.getElementById('progFill').className = 'prog-fill ' + fillClasses[stage];
+  updateProgress();
+
+  if (stage === 1) renderS1();
+  else if (stage === 2) startS2();
+  else if (stage === 3) renderS3();
+  else startS4();
+}
+
+function showLobby() {
+  clearInterval(timerInterval);
+  clearInterval(s2GroupTimerInterval);
+  document.getElementById('quizLobby').style.display = '';
+  document.getElementById('quizArena').classList.remove('active');
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('heroBanner').style.display = '';
+}
+function backToLobby() { clearInterval(timerInterval); clearInterval(s2GroupTimerInterval); showLobby(); }
+
+function updateProgress() {
+  const total = qQuestions.length;
+  const pct = qStage === 2 || qStage === 4
+    ? (qCurrent / total * 100)
+    : (qCurrent / total * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('arenaScore').textContent = `${qScore} 分`;
+}
+
+// ════════════════════════════════
+// STAGE 1 — choice (corner timer)
+// ════════════════════════════════
+let s1Streak = 0;
+function renderS1() {
+  if (qCurrent >= qQuestions.length) { showResult(); return; }
+  clearInterval(timerInterval);
+  const c = qQuestions[qCurrent];
+  const allPool = allDB();
+  const wrongPool = allPool.filter(x=>x.code!==c.code);
+  const wrongs = shuffle(wrongPool).slice(0,3);
+  const opts = shuffle([c,...wrongs]);
+  document.getElementById('arenaBody').innerHTML = `
+    <div class="qcard">
+      <div class="timer-corner">
+        <svg viewBox="0 0 52 52">
+          <circle class="timer-track" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="0"/>
+          <circle class="timer-fill prog-s1" id="timerCircle" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="0" stroke-linecap="round" style="stroke:var(--sky)"/>
+        </svg>
+        <div class="timer-text" id="timerText">10</div>
+      </div>
+      <div class="qcard-badge badge-s1">🚩 看旗選答 — 第 ${qCurrent+1} / ${qQuestions.length} 題</div>
+      <div class="qflag">${c.flag}</div>
+      <div class="qtext">這是哪個國家的國旗？</div>
+      <button class="next-btn-inline" id="nxtBtn" onclick="nextS1()">下一題 →</button>
+      <div class="choices-s1">
+        ${opts.map(o=>`<button class="choice" onclick="ansS1(this,'${o.code}','${c.code}')">${o.name}<span class="choice-en">${o.nameEn}</span></button>`).join('')}
+      </div>
+      <div class="feedback" id="fb"></div>
+    </div>`;
+  startTimerCorner(10, 138.2);
+}
+function startTimerCorner(sec, circLen) {
+  timerSec = sec;
+  timerInterval = setInterval(() => {
+    timerSec--;
+    const circ=document.getElementById('timerCircle');
+    const txt=document.getElementById('timerText');
+    if(txt){txt.textContent=timerSec;txt.className='timer-text'+(timerSec<=5?' urgent':'');}
+    if(circ) circ.style.strokeDashoffset=((1-timerSec/sec)*circLen).toString();
+    if(timerSec<=0){clearInterval(timerInterval);if(qStage===1)timeUpS1();else timeUpS3();}
+  },1000);
+}
+function timeUpS1() {
+  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
+  const c=qQuestions[qCurrent];
+  const fb=document.getElementById('fb');
+  if(fb){fb.className='feedback show bad';fb.innerHTML=`⏰ 時間到！正確答案是<br>${c.flag} <strong>${c.name}</strong><br><small>${c.nameEn}</small>`;}
+  s1Streak=0;
+  const nb=document.getElementById('nxtBtn');if(nb)nb.classList.add('show');
+}
+function ansS1(btn, chosen, correct) {
+  clearInterval(timerInterval);
+  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
+  const ok=chosen===correct;
+  btn.classList.add(ok?'correct':'wrong');
+  const c=qQuestions[qCurrent];
+  const fb=document.getElementById('fb');
+  if(ok){
+    qScore += qPointPerQ; s1Streak++;
+    if(s1Streak>=3)showStreak(s1Streak);
+    fb.className='feedback show ok';fb.innerHTML=`🎉 答對了！+${qPointPerQ} 分 ${c.flag} <strong>${c.name}</strong><br><small>${c.nameEn}</small>`;
+    if(Math.random()<0.25)confetti();
+  } else {
+    s1Streak=0;
+    fb.className='feedback show bad';fb.innerHTML=`😢 答錯了！正確答案是<br>${c.flag} <strong>${c.name}</strong><br><small>${c.nameEn}</small>`;
+  }
+  fb.style.display='block'; updateProgress();
+  const nb=document.getElementById('nxtBtn');if(nb)nb.classList.add('show');
+}
+function nextS1(){qCurrent++;renderS1();}
+
+// ════════════════════════════════
+// STAGE 2 & 4 — flag matching (per-group 30s)
+// ════════════════════════════════
+let s2GroupTimerInterval = null;
+
+function startS2() {
+  matchState = { pairs:[], matched:new Set(), selLeft:null, selRight:null };
+  qCurrent = 0; renderMatchGroup(false);
+}
+function startS4() {
+  matchState = { pairs:[], matched:new Set(), selLeft:null, selRight:null };
+  qCurrent = 0; renderMatchGroup(true);
+}
+
+function startGroupTimer() {
+  clearInterval(s2GroupTimerInterval);
+  let rem = 30;
+  const circLen = 138.2;
+  s2GroupTimerInterval = setInterval(() => {
+    rem = Math.max(0, rem - 1);
+    const circ=document.getElementById('timerCircle');
+    const txt=document.getElementById('timerText');
+    if(txt){txt.textContent=rem;txt.className='timer-text'+(rem<=5?' urgent':'');}
+    if(circ) circ.style.strokeDashoffset=((1-rem/30)*circLen).toFixed(1);
+    if(rem<=0){clearInterval(s2GroupTimerInterval);timeUpGroup();}
+  },1000);
+}
+
+function timeUpGroup() {
+  document.querySelectorAll('.mitem:not(.ok)').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  if(fb){fb.className='feedback show bad';fb.textContent='⏰ 時間到！換下一組';}
+  setTimeout(()=>{
+    qCurrent+=matchState.pairs.length;
+    if(qCurrent>=qQuestions.length){showResult();return;}
+    renderMatchGroup(qStage===4);
+  },1500);
+}
+
+function renderMatchGroup(isBoss=false) {
+  clearInterval(s2GroupTimerInterval);
+  if(qCurrent>=qQuestions.length){showResult();return;}
+  const pairs=qQuestions.slice(qCurrent,qCurrent+5);
+  if(pairs.length<2){showResult();return;}
+  matchState.pairs=pairs; matchState.matched=new Set();
+  matchState.selLeft=null; matchState.selRight=null;
+  const rights=shuffle(pairs);
+  const groupNum=Math.floor(qCurrent/5)+1;
+  const totalGroups=Math.ceil(qQuestions.length/5);
+  const badge=isBoss?'👹 魔王關':'🎯 國旗配對';
+  const badgeClass=isBoss?'badge-s3':'badge-s2';
+  const timerColor=isBoss?'var(--coral)':'var(--grass)';
+  document.getElementById('arenaBody').innerHTML=`
+    <div class="qcard">
+      <div class="timer-corner">
+        <svg viewBox="0 0 52 52">
+          <circle class="timer-track" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="0"/>
+          <circle id="timerCircle" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="0" stroke-linecap="round" fill="none" stroke-width="4" style="stroke:${timerColor}"/>
+        </svg>
+        <div class="timer-text" id="timerText">30</div>
+      </div>
+      <div class="qcard-badge ${badgeClass}">${badge} — 第 ${groupNum} 組 / ${totalGroups} 組</div>
+      <div class="qtext" style="margin-bottom:14px;font-size:16px">左邊選國旗，右邊選對應的國家！</div>
+      <div class="match-wrap">
+        <div class="match-col">
+          <div class="match-col-head">國旗</div>
+          ${pairs.map((c,i)=>`<button class="mitem" id="ml${i}" onclick="selMatchL(${i})"><span class="mitem-flag">${c.flag}</span></button>`).join('')}
+        </div>
+        <div class="match-col">
+          <div class="match-col-head">國家</div>
+          ${rights.map(c=>`<button class="mitem" id="mr${c.code}" onclick="selMatchR('${c.code}')"><div class="mitem-name"><span class="mitem-name-zh">${c.name}</span><span class="mitem-name-en">${c.nameEn}</span></div></button>`).join('')}
+        </div>
+      </div>
+      <div class="feedback" id="fb"></div>
+    </div>`;
+  updateProgress();
+  startGroupTimer();
+}
+function selMatchL(idx) {
+  if(matchState.matched.has(matchState.pairs[idx].code)) return;
+  document.querySelectorAll('[id^="ml"]').forEach(b=>{if(!b.classList.contains('ok'))b.classList.remove('sel');});
+  document.getElementById('ml'+idx).classList.add('sel');
+  matchState.selLeft=idx; tryMatchS2();
+}
+function selMatchR(code) {
+  if(matchState.matched.has(code)) return;
+  document.querySelectorAll('[id^="mr"]').forEach(b=>{if(!b.classList.contains('ok'))b.classList.remove('sel');});
+  document.getElementById('mr'+code).classList.add('sel');
+  matchState.selRight=code; tryMatchS2();
+}
+function tryMatchS2() {
+  if(matchState.selLeft===null||matchState.selRight===null) return;
+  const lc=matchState.pairs[matchState.selLeft];
+  const ok=lc.code===matchState.selRight;
+  const lBtn=document.getElementById('ml'+matchState.selLeft);
+  const rBtn=document.getElementById('mr'+matchState.selRight);
+  if(ok){
+    lBtn.classList.replace('sel','ok');lBtn.disabled=true;
+    rBtn.classList.replace('sel','ok');rBtn.disabled=true;
+    matchState.matched.add(lc.code);qScore+=qPointPerQ;
+    if(matchState.matched.size===matchState.pairs.length){
+      clearInterval(s2GroupTimerInterval);
+      qCurrent+=matchState.pairs.length;
+      setTimeout(()=>renderMatchGroup(qStage===4),500);
+    }
+  } else {
+    lBtn.classList.add('fail');rBtn.classList.add('fail');
+    setTimeout(()=>{lBtn.classList.remove('sel','fail');rBtn.classList.remove('sel','fail');},450);
+  }
+  matchState.selLeft=null;matchState.selRight=null;
+  updateProgress();
+}
+
+// ════════════════════════════════
+// STAGE 3 — fill in (30s, keyboard→slots)
+// ════════════════════════════════
+let s3Streak = 0;
+let s3Lang = 'zh';
+let s3HintsUsed = 0;
+let s3RevealedIdx = new Set();
+let s3Answered = false;
+
+function setS3Lang(lang) {
+  s3Lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  if(lang==='zh'){
+    document.getElementById('letterSlotsWrap').style.display='none';
+    document.getElementById('fillAns').style.display='block';
+    document.getElementById('fillAns').placeholder='輸入中文國家名稱…';
+    document.getElementById('hintRow').style.display='none';
+  } else {
+    document.getElementById('letterSlotsWrap').style.display='block';
+    document.getElementById('fillAns').style.display='none';
+    document.getElementById('hintRow').style.display='flex';
+    renderLetterSlots(qQuestions[qCurrent]);
+  }
+}
+
+function renderLetterSlots(c) {
+  const wrap=document.getElementById('letterSlotsWrap');
+  if(!wrap) return;
+  const word=c.nameEn;
+  wrap.innerHTML='<div class="letter-slots">'+
+    word.split('').map((ch,i)=>{
+      if(ch===' ') return '<div class="lslot space"></div>';
+      const rev=s3RevealedIdx.has(i);
+      return `<div class="lslot${rev?' revealed':''}" id="ls${i}">${rev?ch.toUpperCase():''}</div>`;
+    }).join('')+
+  '</div>';
+}
+
+// EN keyboard via hidden input (mobile-friendly)
+function handleEnInput(inputEl) {
+  if(s3Answered) return;
+  const c=qQuestions[qCurrent];
+  const word=c.nameEn;
+  const typed=inputEl.value.replace(/[^a-zA-Z ]/g,'');
+  // sync typed chars into slots
+  let ti=0;
+  for(let i=0;i<word.length;i++){
+    if(word[i]===' ') continue;
+    if(s3RevealedIdx.has(i)) continue;
+    const el=document.getElementById('ls'+i);
+    if(el){
+      const ch=typed[ti]||'';
+      el.textContent=ch?ch.toUpperCase():'';
+      el.classList.toggle('filled',!!ch);
+    }
+    ti++;
+  }
+}
+function handleEnKeydown(e){
+  if(e.key==='Enter') subS3();
+}
+// Legacy desktop keydown kept as noop
+function handleEnKeyboard(e){}
+
+function deleteLastSlot() {
+  if(s3Answered) return;
+  const hi=document.getElementById('enHiddenInput');
+  if(!hi) return;
+  if(hi.value.length>0){
+    hi.value=hi.value.slice(0,-1);
+    handleEnInput(hi);
+  }
+  hi.focus();
+}
+
+function useHint() {
+  const c=qQuestions[qCurrent];
+  if(s3HintsUsed>=2) return;
+  const word=c.nameEn;
+  const btn=document.getElementById('hintBtn');
+  s3HintsUsed++;
+  if(s3HintsUsed===1){
+    word.split('').forEach((ch,i)=>{if(i===0||word[i-1]===' ')s3RevealedIdx.add(i);});
+  } else {
+    const unrevealed=word.split('').map((ch,i)=>({ch,i})).filter(x=>x.ch!==' '&&!s3RevealedIdx.has(x.i));
+    shuffle(unrevealed).slice(0,Math.min(3,unrevealed.length)).forEach(x=>s3RevealedIdx.add(x.i));
+  }
+  // sync hidden input value to revealed slots
+  const hi=document.getElementById('enHiddenInput');
+  if(hi){
+    let typed='';
+    for(let i=0;i<word.length;i++){
+      if(word[i]===' ')continue;
+      if(!s3RevealedIdx.has(i)){
+        const el=document.getElementById('ls'+i);
+        typed+=el?(el.textContent||''):'';
+      }
+    }
+    hi.value=typed;
+  }
+  renderLetterSlots(c);
+  if(s3HintsUsed>=2&&btn){btn.disabled=true;btn.textContent='💡 提示用完了';}
+  else if(btn){btn.textContent=`💡 再提示一次（剩 1 次）`;}
+}
+
+function renderS3() {
+  if(qCurrent>=qQuestions.length){showResult();return;}
+  clearInterval(timerInterval);
+  s3HintsUsed=0;s3RevealedIdx=new Set();s3Answered=false;
+  const c=qQuestions[qCurrent];
+  document.getElementById('arenaBody').innerHTML=`
+    <div class="qcard">
+      <div class="timer-corner">
+        <svg viewBox="0 0 52 52">
+          <circle class="timer-track" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="0"/>
+          <circle id="timerCircle" class="timer-fill" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="0" stroke-linecap="round" fill="none" stroke-width="4" style="stroke:var(--coral)"/>
+        </svg>
+        <div class="timer-text" id="timerText">30</div>
+      </div>
+      <div class="qcard-badge badge-s3">✏️ 填空 — 第 ${qCurrent+1} 題</div>
+      <div class="qflag">${c.flag}</div>
+      <div class="fill-wrap">
+        <div class="fill-lang-toggle">
+          <button class="lang-btn ${s3Lang==='zh'?'active':''}" data-lang="zh" onclick="setS3Lang('zh')">中文</button>
+          <button class="lang-btn ${s3Lang==='en'?'active':''}" data-lang="en" onclick="setS3Lang('en')">English</button>
+        </div>
+        <!-- EN mode: clickable slot area triggers keyboard via hidden input -->
+        <div id="letterSlotsWrap" style="display:${s3Lang==='en'?'block':'none'};cursor:text" onclick="document.getElementById('enHiddenInput').focus()"></div>
+        <!-- Hidden input captures keyboard for EN mode -->
+        <input id="enHiddenInput"
+          style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none"
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+          oninput="handleEnInput(this)"
+          onkeydown="handleEnKeydown(event)">
+        <!-- ZH mode normal input -->
+        <input class="fill-input" id="fillAns"
+          style="display:${s3Lang==='zh'?'block':'none'}"
+          placeholder="輸入中文國家名稱…"
+          autocomplete="off"
+          onkeydown="if(event.key==='Enter')subS3()">
+        <div class="hint-row" id="hintRow" style="display:${s3Lang==='en'?'flex':'none'}">
+          <button class="hint-btn" id="hintBtn" onclick="useHint()">💡 提示（剩 2 次）</button>
+          <button class="fill-delete" id="delBtn" onclick="deleteLastSlot()">⌫ 刪除</button>
+        </div>
+        <button class="fill-submit" onclick="subS3()">確認答案 ✓</button>
+      </div>
+      <button class="next-btn-inline" id="nxtBtn" onclick="nextS3()">下一題 →</button>
+      <div class="feedback" id="fb"></div>
+    </div>`;
+  if(s3Lang==='en') {
+    renderLetterSlots(c);
+    setTimeout(()=>{ const hi=document.getElementById('enHiddenInput'); if(hi)hi.focus(); },100);
+  } else {
+    setTimeout(()=>{const inp=document.getElementById('fillAns');if(inp)inp.focus();},80);
+  }
+  startTimerCorner(30, 138.2);
+}
+
+function timeUpS3() {
+  s3Answered=true;
+  const inp=document.getElementById('fillAns');if(inp)inp.disabled=true;
+  const hi=document.getElementById('enHiddenInput');if(hi)hi.disabled=true;
+  const sb=document.querySelector('.fill-submit');if(sb)sb.disabled=true;
+  const hb=document.getElementById('hintBtn');if(hb)hb.disabled=true;
+  const c=qQuestions[qCurrent];
+  const fb=document.getElementById('fb');
+  if(fb){fb.className='feedback show bad';fb.innerHTML=`⏰ 時間到！正確答案是<br>${c.flag} <strong>${c.name}</strong><br><small>${c.nameEn}</small>`;}
+  s3Streak=0; const _nb=document.getElementById('nxtBtn');if(_nb)_nb.classList.add('show');
+}
+
+function subS3() {
+  if(s3Answered) return;
+  clearInterval(timerInterval);
+  s3Answered=true;
+  const inp=document.getElementById('fillAns');
+  const hi=document.getElementById('enHiddenInput');
+  const sb=document.querySelector('.fill-submit');if(sb)sb.disabled=true;
+  const hb=document.getElementById('hintBtn');if(hb)hb.disabled=true;
+  if(hi)hi.disabled=true;
+  const c=qQuestions[qCurrent];
+  let ans='';
+  if(s3Lang==='zh'){
+    if(inp){inp.disabled=true;ans=inp.value.trim();}
+  } else {
+    const word=c.nameEn;
+    for(let i=0;i<word.length;i++){
+      if(word[i]===' '){ans+=' ';continue;}
+      const el=document.getElementById('ls'+i);
+      ans+=el?(el.textContent||''):'';
+    }
+  }
+  const ok=s3Lang==='zh'
+    ?ans.toLowerCase()===c.name.toLowerCase()
+    :ans.toLowerCase()===c.nameEn.toLowerCase();
+  const fb=document.getElementById('fb');
+  if(inp&&s3Lang==='zh') inp.classList.add(ok?'correct':'wrong');
+  if(ok){
+    qScore+=qPointPerQ;s3Streak++;
+    if(s3Streak>=3)showStreak(s3Streak);
+    fb.className='feedback show ok';
+    fb.innerHTML=`🎉 答對了！+${qPointPerQ} 分 ${c.flag} <strong>${c.name}</strong><br><small>${c.nameEn}</small>`;
+    if(Math.random()<0.25)confetti();
+  } else {
+    s3Streak=0;
+    fb.className='feedback show bad';
+    fb.innerHTML=`😢 答錯了！正確答案是<br>${c.flag} <strong>${c.name}</strong><br><small>${c.nameEn}</small>`;
+  }
+  updateProgress(); const _nb2=document.getElementById('nxtBtn');if(_nb2)_nb2.classList.add('show');
+}
+function nextS3(){qCurrent++;renderS3();}
+
+// ════════════════════════════════
+// RESULT
+// ════════════════════════════════
+
+function calcStarsByAccuracy(correct, total) {
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  if (pct === 100) return 4;
+  if (pct >= 80) return 3;
+  if (pct >= 60) return 2;
+  return 1;
+}
+
+function showResult() {
+  clearInterval(timerInterval);
+  clearInterval(s2GroupTimerInterval);
+  document.getElementById('arenaBody').innerHTML='';
+  const maxScore = qQuestions.length * qPointPerQ;
+  const pct = maxScore > 0 ? Math.round(qScore/maxScore*100) : 0;
+  let emoji='😊',msg='繼續加油！';
+  if(pct>=90){emoji='🏆';msg='超級厲害！地理天才！';}
+  else if(pct>=70){emoji='🌟';msg='答得很好！再複習更棒！';}
+  else if(pct>=50){emoji='😊';msg='不錯喔！多練習幾次吧！';}
+  else{emoji='📚';msg='先去學習模式複習吧！';}
+
+  // Award stars by accuracy:
+  // completed = 1 star, >=60% = 2 stars, >=80% = 3 stars, 100% = 4 stars
+  const starsEarned = calcStarsByAccuracy(qScore, maxScore);
+  addStars(starsEarned);
+  recordHistory(qStage, qScore, maxScore);
+
+  const starDisplay = '⭐'.repeat(starsEarned);
+  const rc=document.getElementById('resultCard');
+  rc.innerHTML=`
+    <div class="result-emoji">${emoji}</div>
+    <div class="result-title">${msg}</div>
+    <div class="result-frac">${qScore} <span style="font-size:22px;color:var(--muted)">/ ${maxScore} 分</span></div>
+    <div class="result-pct">共 ${qQuestions.length} 題・正確率 ${pct}%</div>
+    <div style="font-size:28px;margin:12px 0;letter-spacing:2px">${starDisplay}</div>
+    <div style="font-size:13px;color:var(--muted);font-weight:700;margin-bottom:20px">獲得 ${starsEarned} 顆星！累計 ${stars} 顆</div>
+    <div class="result-bar-wrap"><div class="result-bar" id="rBar" style="width:0%"></div></div>
+    <div class="result-btns">
+      <button class="rbtn rbtn-retry" onclick="startStage(${qStage})">🔄 再挑戰</button>
+      <button class="rbtn rbtn-home" onclick="backToLobby()">🏠 選關卡</button>
+    </div>`;
+  rc.classList.add('show');
+  document.getElementById('progFill').style.width='100%';
+  setTimeout(()=>{const b=document.getElementById('rBar');if(b)b.style.width=pct+'%';},100);
+  if(pct>=70) confetti();
+}
+
+// ════════════════════════════════
+// SPEECH
+// ════════════════════════════════
+let _speechVoices = [];
+
+function loadSpeechVoices() {
+  if (!window.speechSynthesis) return;
+  _speechVoices = window.speechSynthesis.getVoices() || [];
+}
+
+if (window.speechSynthesis) {
+  loadSpeechVoices();
+  window.speechSynthesis.onvoiceschanged = loadSpeechVoices;
+}
+
+function getEnglishVoice() {
+  if (!_speechVoices.length && window.speechSynthesis) loadSpeechVoices();
+  return (
+    _speechVoices.find(v => v.lang === 'en-US') ||
+    _speechVoices.find(v => /^en[-_]/i.test(v.lang)) ||
+    null
+  );
+}
+
+function speak(text) {
+  if (!window.speechSynthesis || !text) {
+    alert('這個瀏覽器不支援語音播放，請改用 Chrome / Safari 開啟。');
+    return;
+  }
+
+  try {
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    if (typeof synth.resume === 'function') synth.resume();
+
+    const u = new SpeechSynthesisUtterance(String(text).trim());
+    u.lang = 'en-US';
+    u.rate = 0.88;
+    u.pitch = 1;
+    u.volume = 1;
+
+    const voice = getEnglishVoice();
+    if (voice) u.voice = voice;
+
+    // 重要：不要用 setTimeout 包住 speak()。
+    // 手機瀏覽器常會要求聲音必須在點擊事件內「直接」觸發。
+    synth.speak(u);
+  } catch(e) {
+    console.warn('Speech error:', e);
+    alert('語音播放失敗，請確認裝置音量或改用 Chrome / Safari 開啟。');
+  }
+}
+
+// ════════════════════════════════
+// HISTORY PANEL
+// ════════════════════════════════
+function openHist() {
+  renderHistPanel();
+  document.getElementById('histOverlay').classList.add('show');
+}
+function closeHist() {
+  document.getElementById('histOverlay').classList.remove('show');
+}
+function closeHistOverlay(e) {
+  if (e.target === document.getElementById('histOverlay')) closeHist();
+}
+async function renderHistPanel() {
+  const body = document.getElementById('histBody');
+  body.innerHTML = '<div class="hist-empty">載入中…</div>';
+  // Load last 50 records from Firebase
+  let allHist = [];
+  try {
+    if (window._db) {
+      const snap = await window._db.collection('history')
+        .orderBy('ts','desc').limit(50).get();
+      snap.forEach(doc => allHist.push(doc.data()));
+    }
+  } catch(e) {}
+  // Fallback to local if offline
+  if (!allHist.length) {
+    allHist = JSON.parse(localStorage.getItem('flagHistory') || '[]');
+  }
+  if (!allHist.length) {
+    body.innerHTML = '<div class="hist-empty">還沒有挑戰記錄<br>快去測驗吧！🎯</div>';
+    return;
+  }
+  const byDate = {};
+  allHist.forEach(h => {
+    const key = h.date || '未知日期';
+    if (!byDate[key]) byDate[key] = [];
+    byDate[key].push(h);
+  });
+  body.innerHTML = Object.keys(byDate).map(date => `
+    <div class="hist-day">
+      <div class="hist-day-label">${date}</div>
+      ${byDate[date].map(h => `
+        <div class="hist-item">
+          <div class="hist-item-stage">${h.icon||'🎯'}</div>
+          <div class="hist-item-info">
+            <div class="hist-item-name">${h.player ? `<span style="color:var(--sky)">${h.player}</span> · ` : ''}${h.name||''}</div>
+            <div class="hist-item-score">${h.time||''}・${h.score}/${h.maxScore} 分・正確率 ${h.pct}%</div>
+          </div>
+          <div class="hist-item-stars">${'⭐'.repeat(Math.min(h.stars||0,4))}</div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ════════════════════════════════
+// LEADERBOARD UPDATE
+// ════════════════════════════════
+async function updateLeaderboard(stage, score, starsEarned) {
+  if (!window._db || !window._playerName) return;
+  const stageKey = 's'+stage;
+  const playerName = window._playerName;
+  try {
+    const ref = window._db.collection('leaderboard').doc(stageKey+'_'+playerName);
+    const doc = await ref.get();
+    const existing = doc.exists ? doc.data().score : -1;
+    if (score > existing) {
+      await ref.set({ stage: stageKey, player: playerName, score, updatedAt: Date.now() });
+    }
+  } catch(e){}
+}
+
+// ════════════════════════════════
+// LEADERBOARD UI
+// ════════════════════════════════
+let currentLbTab = 'total';
+
+function openLeaderboard() {
+  document.getElementById('lbOverlay').classList.add('show');
+  loadLbTab(currentLbTab);
+}
+function closeLeaderboard() {
+  document.getElementById('lbOverlay').classList.remove('show');
+}
+function closeLbOverlay(e) {
+  if (e.target === document.getElementById('lbOverlay')) closeLeaderboard();
+}
+function lbTab(tab, btn) {
+  currentLbTab = tab;
+  document.querySelectorAll('.lb-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  loadLbTab(tab);
+}
+async function loadLbTab(tab) {
+  const body = document.getElementById('lbBody');
+  body.innerHTML = '<div class="lb-loading">載入中…</div>';
+  if (!window._db) {
+    body.innerHTML = '<div class="lb-empty">目前離線，無法載入排行榜</div>';
+    return;
+  }
+  try {
+    if (tab === 'total') {
+      // 嘗試用 orderBy，失敗時改用前端排序
+      let snap;
+      try {
+        snap = await window._db.collection('players')
+          .orderBy('totalStars','desc').limit(10).get();
+      } catch(idxErr) {
+        // 索引未建立，抓全部後前端排序
+        snap = await window._db.collection('players').limit(50).get();
+      }
+      const rows = [];
+      snap.forEach(doc => rows.push(doc.data()));
+      rows.sort((a,b) => (b.totalStars||0) - (a.totalStars||0));
+      renderLbRows(body, rows.slice(0,10), r => `${r.totalStars||0} ⭐`, '暫無星數記錄');
+    } else {
+      // 先抓全部該關卡的記錄，在前端排序，避免需要複合索引
+      const snap = await window._db.collection('leaderboard')
+        .where('stage','==',tab).get();
+      const rows = [];
+      snap.forEach(doc => rows.push(doc.data()));
+      rows.sort((a,b) => (b.score||0) - (a.score||0));
+      renderLbRows(body, rows.slice(0,5), r => `${r.score} 分`, '暫無挑戰記錄');
+    }
+  } catch(e) {
+    console.error('排行榜載入錯誤:', e.code, e.message);
+    body.innerHTML = `<div class="lb-empty">載入失敗<br><small style="font-size:11px;color:#aaa">${e.code || e.message}</small></div>`;
+  }
+}
+function renderLbRows(body, rows, scoreFn, emptyMsg) {
+  if (!rows.length) {
+    body.innerHTML = `<div class="lb-empty">${emptyMsg}</div>`;
+    return;
+  }
+  const rankLabels = ['🥇','🥈','🥉','4','5','6','7','8','9','10'];
+  const rankClasses = ['gold','silver','bronze','','','','','','',''];
+  const me = window._playerName || '';
+  body.innerHTML = rows.map((r,i) => {
+    const isMe = r.player === me || r.name === me;
+    return `<div class="lb-row ${isMe?'me':''}">
+      <div class="lb-rank ${rankClasses[i]||''}">${rankLabels[i]||i+1}</div>
+      <div class="lb-name">${r.player||r.name||'匿名'}${isMe?' 👈':''}</div>
+      <div class="lb-score">${scoreFn(r)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════
+// CUSTOM CONFIRM MODAL (replaces browser confirm())
+// ════════════════════════════════
+function showConfirm(icon, title, msg, onOk, onCancel) {
+  document.getElementById('cconfirmIcon').textContent = icon;
+  document.getElementById('cconfirmTitle').textContent = title;
+  document.getElementById('cconfirmMsg').textContent = msg;
+  const overlay = document.getElementById('cconfirmOverlay');
+  overlay.classList.add('show');
+  const okBtn = document.getElementById('cconfirmOk');
+  const cancelBtn = document.getElementById('cconfirmCancel');
+  // Clone to remove old listeners
+  const newOk = okBtn.cloneNode(true);
+  const newCancel = cancelBtn.cloneNode(true);
+  okBtn.replaceWith(newOk);
+  cancelBtn.replaceWith(newCancel);
+  newOk.addEventListener('click', () => {
+    overlay.classList.remove('show');
+    if (onOk) onOk();
+  });
+  newCancel.addEventListener('click', () => {
+    overlay.classList.remove('show');
+    if (onCancel) onCancel();
+  });
+}
+
+// ════════════════════════════════
+// PIN HELPER — digit-by-digit input
+// ════════════════════════════════
+function pinMove(prefix, idx, total) {
+  const el = document.getElementById(prefix+idx);
+  if (!el) return;
+  el.value = el.value.replace(/[^0-9]/g,'').slice(-1);
+  if (el.value && idx < total-1) {
+    const next = document.getElementById(prefix+(idx+1));
+    if (next) next.focus();
+  }
+}
+function pinBack(prefix, idx, e) {
+  if (e.key === 'Backspace') {
+    const el = document.getElementById(prefix+idx);
+    if (el && !el.value && idx > 0) {
+      const prev = document.getElementById(prefix+(idx-1));
+      if (prev) { prev.value = ''; prev.focus(); }
+    }
+  }
+  if (e.key === 'Enter') confirmNickname();
+}
+function getPinValue(prefix, total) {
+  let pin = '';
+  for (let i = 0; i < total; i++) {
+    const el = document.getElementById(prefix+i);
+    pin += el ? (el.value || '') : '';
+  }
+  return pin;
+}
+function clearPin(prefix, total) {
+  for (let i = 0; i < total; i++) {
+    const el = document.getElementById(prefix+i);
+    if (el) el.value = '';
+  }
+}
+
+
+function closeNickModal() {
+  document.getElementById('nickOverlay').style.display = 'none';
+  document.getElementById('nickWarn').textContent = '';
+  clearPin('np', 4);
+  clearPin('vp', 4);
+}
+
+// ════════════════════════════════
+// NICKNAME SYSTEM
+// ════════════════════════════════
+window._playerName = localStorage.getItem('flagPlayerName') || '';
+window._nickStep = 1; // 1=name, 2=set PIN, 3=verify PIN
+window._pendingName = '';
+window._pendingPlayerData = null;
+
+async function initNickname() {
+  if (!window._playerName) {
+    showNicknameModal('new');
+  } else {
+    document.getElementById('playerName').textContent = window._playerName;
+    document.getElementById('nickOverlay').style.display = 'none';
+    // Sync stars from Firebase
+    if (window._db) {
+      try {
+        const doc = await window._db.collection('players').doc(window._playerName).get();
+        if (doc.exists) {
+          const data = doc.data();
+          if ((data.totalStars||0) > stars) {
+            stars = data.totalStars;
+            localStorage.setItem('flagStars', stars);
+            document.getElementById('starCount').textContent = stars;
+          }
+        } else {
+          window._db.collection('players').doc(window._playerName).set({
+            name: window._playerName, totalStars: stars, updatedAt: Date.now()
+          }, { merge: true }).catch(()=>{});
+        }
+      } catch(e){}
+    }
+  }
+}
+
+function showNicknameModal(mode) {
+  // mode: 'new' | 'change'
+  const overlay = document.getElementById('nickOverlay');
+  overlay.style.display = 'flex';
+  document.getElementById('nickStep1').style.display = 'block';
+  document.getElementById('nickStep2').style.display = 'none';
+  document.getElementById('nickStep3').style.display = 'none';
+  document.getElementById('nickWarn').textContent = '';
+  window._nickStep = 1;
+
+  if (mode === 'change') {
+    document.getElementById('nickEmoji').textContent = '🔄';
+    document.getElementById('nickTitle').textContent = '更換玩家';
+    document.getElementById('nickSub').innerHTML = '請輸入玩家名稱及驗證碼<br>才能讀取之前的冒險紀錄<br>（注意：大小寫需與之前一致）<br>或輸入新名稱重新開始冒險～';
+    document.getElementById('nickInput').value = '';
+  } else {
+    document.getElementById('nickEmoji').textContent = '🌍';
+    document.getElementById('nickTitle').textContent = '你是誰？';
+    document.getElementById('nickSub').textContent = '輸入你的名字加入冒險！每位玩家有專屬密碼保護紀錄。';
+    document.getElementById('nickInput').value = '';
+  }
+  setTimeout(() => document.getElementById('nickInput').focus(), 100);
+}
+
+function changeNickname() {
+  showNicknameModal('change');
+}
+
+function nickBackToStep1() {
+  document.getElementById('nickStep1').style.display = 'block';
+  document.getElementById('nickStep2').style.display = 'none';
+  document.getElementById('nickStep3').style.display = 'none';
+  document.getElementById('nickWarn').textContent = '';
+  window._nickStep = 1;
+  clearPin('np', 4);
+  clearPin('vp', 4);
+  setTimeout(() => document.getElementById('nickInput').focus(), 80);
+}
+
+async function nickNextStep() {
+  const warn = document.getElementById('nickWarn');
+  const name = document.getElementById('nickInput').value.trim();
+  if (!name) { warn.textContent = '請輸入名字！'; return; }
+  if (name.length < 2) { warn.textContent = '名字至少 2 個字'; return; }
+
+  warn.textContent = '檢查中…';
+  window._pendingName = name;
+
+  if (window._db) {
+    try {
+      const doc = await window._db.collection('players').doc(name).get();
+      if (doc.exists) {
+        // Existing player — need to verify PIN
+        window._pendingPlayerData = doc.data();
+        warn.textContent = '';
+        document.getElementById('nickStep1').style.display = 'none';
+        document.getElementById('nickStep3').style.display = 'block';
+        document.getElementById('nickEmoji').textContent = '🔐';
+        document.getElementById('nickTitle').textContent = `歡迎回來，${name}！`;
+        document.getElementById('nickSub').textContent = '輸入你的密碼來驗證身份';
+        window._nickStep = 3;
+        clearPin('vp', 4);
+        setTimeout(() => document.getElementById('vp0').focus(), 80);
+      } else {
+        // New player — set PIN
+        window._pendingPlayerData = null;
+        warn.textContent = '';
+        document.getElementById('nickStep1').style.display = 'none';
+        document.getElementById('nickStep2').style.display = 'block';
+        document.getElementById('nickEmoji').textContent = '🔑';
+        document.getElementById('nickTitle').textContent = '設定密碼';
+        document.getElementById('nickSub').textContent = `「${name}」是新玩家！設定 4 位數字密碼保護你的紀錄。`;
+        window._nickStep = 2;
+        clearPin('np', 4);
+        setTimeout(() => document.getElementById('np0').focus(), 80);
+      }
+    } catch(e) {
+      warn.textContent = '連線失敗，請稍後再試';
+    }
+  } else {
+    // Offline fallback — no PIN
+    warn.textContent = '';
+    finishLogin(name);
+  }
+}
+
+async function confirmNickname() {
+  const warn = document.getElementById('nickWarn');
+  const name = window._pendingName;
+  if (!name) return;
+
+  if (window._nickStep === 2) {
+    // New player: save with PIN
+    const pin = getPinValue('np', 4);
+    if (pin.length < 4) { warn.textContent = '請輸入完整 4 位數字密碼'; document.getElementById('np0').focus(); return; }
+    warn.textContent = '建立中…';
+    try {
+      await window._db.collection('players').doc(name).set({
+        name,
+        pin,
+        totalStars: 0,
+        updatedAt: Date.now()
+      });
+
+      // 新玩家重新開始：Firebase 與前端星星都歸零，避免吃到上一位玩家的 localStorage
+      stars = 0;
+      localStorage.setItem('flagStars', 0);
+      document.getElementById('starCount').textContent = 0;
+
+      warn.textContent = '';
+      finishLogin(name);
+    } catch(e) {
+      warn.textContent = '建立失敗，請稍後再試';
+    }
+
+  } else if (window._nickStep === 3) {
+    // Existing player: verify PIN
+    const pin = getPinValue('vp', 4);
+    if (pin.length < 4) { warn.textContent = '請輸入完整 4 位數字密碼'; document.getElementById('vp0').focus(); return; }
+    const data = window._pendingPlayerData;
+    if (!data || !data.pin) {
+      // Old account without PIN — accept any 4-digit input
+      warn.textContent = '';
+      // Update account to add PIN
+      try {
+        await window._db.collection('players').doc(name).set({ pin }, { merge: true });
+      } catch(e){}
+      loadAndLogin(name, data);
+      return;
+    }
+    if (pin !== data.pin) {
+      warn.textContent = '密碼錯誤，請再試一次';
+      clearPin('vp', 4);
+      setTimeout(() => document.getElementById('vp0').focus(), 80);
+      return;
+    }
+    warn.textContent = '';
+    loadAndLogin(name, data);
+  }
+}
+
+function loadAndLogin(name, data) {
+  if (data && (data.totalStars||0) > 0) {
+    stars = data.totalStars;
+    localStorage.setItem('flagStars', stars);
+    document.getElementById('starCount').textContent = stars;
+  }
+  finishLogin(name);
+}
+
+function finishLogin(name) {
+  window._playerName = name;
+  localStorage.setItem('flagPlayerName', name);
+  document.getElementById('playerName').textContent = name;
+  document.getElementById('nickOverlay').style.display = 'none';
+  document.getElementById('nickWarn').textContent = '';
+}
+
+// ════════════════════════════════
+// INIT
+// ════════════════════════════════
+document.getElementById('starCount').textContent = stars;
+renderLearn();
+updatePillCounts();
+
+// Build marquee with all flags duplicated for seamless loop
+(function buildMarquee(){
+  const flags = allDB().map(c=>c.flag);
+  const doubled = [...flags,...flags];
+  const track = document.getElementById('marqueeTrack');
+  if(track) track.innerHTML = doubled.map(f=>`<span class="marquee-flag">${f}</span>`).join('');
+})();
+</script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+// ════════════════════════════════
+// FIREBASE INIT
+// ════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyBtoJqaIFWzxHrKpm0FULvg-tx9XhIpzf0",
+  authDomain: "flag-challenge-6eea7.firebaseapp.com",
+  projectId: "flag-challenge-6eea7",
+  storageBucket: "flag-challenge-6eea7.firebasestorage.app",
+  messagingSenderId: "323004271540",
+  appId: "1:323004271540:web:6263813ff463f00d7100e1"
+};
+
+try {
+  const app = firebase.initializeApp(firebaseConfig);
+  window._db = firebase.firestore(app);
+} catch(e) {
+  console.warn('Firebase init failed:', e);
+  window._db = null;
+}
+
+// Start nickname flow after Firebase ready
+initNickname();
+</script>
+</body>
+</html>
