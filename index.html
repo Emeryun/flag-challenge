@@ -2418,8 +2418,16 @@ async function confirmNickname() {
     warn.textContent = '建立中…';
     try {
       await window._db.collection('players').doc(name).set({
-        name, pin, totalStars: stars, updatedAt: Date.now()
-      });
+  name,
+  pin,
+  totalStars: 0,
+  updatedAt: Date.now()
+});
+
+// 強制歸零（前端也一起清）
+stars = 0;
+localStorage.setItem('flagStars', 0);
+document.getElementById('starCount').textContent = 0;
       warn.textContent = '';
       finishLogin(name);
     } catch(e) {
@@ -2453,11 +2461,13 @@ async function confirmNickname() {
 }
 
 function loadAndLogin(name, data) {
-  if (data && (data.totalStars||0) > 0) {
-    stars = data.totalStars;
-    localStorage.setItem('flagStars', stars);
-    document.getElementById('starCount').textContent = stars;
-  }
+  stars = (data && typeof data.totalStars === 'number')
+    ? data.totalStars
+    : 0;
+
+  localStorage.setItem('flagStars', stars);
+  document.getElementById('starCount').textContent = stars;
+
   finishLogin(name);
 }
 
